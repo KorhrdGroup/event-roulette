@@ -1,0 +1,17 @@
+/* 머리줄 — 바로소셜 form.module.css .header 를 오피스 토큰으로 옮겼다 */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 480px;
+  height: 55px;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--hps-border);
+  background: var(--hps-card-bg);
+}
+
+.logo {
+  width: 220px;
+  height: auto;
+}

@@ -1,0 +1,335 @@
+/* 당근 장학금 룰렛 랜딩 — 한평생오피스 디자인 시스템(--hps-* 토큰). 모바일 우선, 넓은 화면에서는 가운데 480 폭.
+   카드: 모서리 --hps-radius-card · 안쪽 20 · 카드 사이 16 (docs/DESIGN_SYSTEM.md §3 대시보드류 규칙) */
+
+.page {
+  min-height: calc(100dvh - 55px);
+  /* 좁은 폰(360)에서 끝 단어 하나만 다음 줄로 떨어지지 않게 — 줄 길이를 고르게 나눈다 */
+  text-wrap: balance;
+  background: var(--hps-card-bg);
+  color: var(--hps-text-primary);
+  word-break: keep-all;
+}
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hps-space-16);
+  max-width: 480px;
+  margin: 0 auto;
+  padding: var(--hps-space-16) var(--hps-space-16) var(--hps-space-40);
+}
+
+.accent {
+  color: var(--hps-blue);
+}
+
+/* ── 첫 화면 ── */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--hps-space-24) var(--hps-space-20);
+  border-radius: var(--hps-radius-card);
+  background: var(--hps-card-bg);
+  text-align: center;
+  border: 1px solid var(--hps-border);
+}
+
+.lead {
+  margin-top: var(--hps-space-16);
+  color: var(--hps-text-body);
+  font-size: var(--hps-text-lg);
+  font-weight: 600;
+}
+
+.title {
+  margin: var(--hps-space-8) 0 var(--hps-space-32);
+  font-size: var(--hps-text-4xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: var(--leading-tight);
+}
+
+.wheelArea {
+  width: 100%;
+  scroll-margin-top: var(--hps-space-40);
+}
+
+.wheelSkeleton {
+  width: min(84vw, 340px);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: var(--hps-blue-subtle);
+}
+
+.sure {
+  margin-top: var(--hps-space-24);
+  font-size: var(--hps-text-3xl);
+  font-weight: 700;
+}
+
+.cheer {
+  margin-top: var(--hps-space-8);
+  color: var(--hps-text-muted);
+  font-size: var(--hps-text-md);
+  line-height: var(--leading-normal);
+}
+
+.cheer strong {
+  color: var(--hps-blue);
+  font-weight: 600;
+}
+
+.ctaWrap {
+  width: 100%;
+  margin-top: var(--hps-space-24);
+}
+
+.ctaError {
+  margin-top: var(--hps-space-12);
+  color: var(--color-danger);
+  font-size: var(--hps-text-md);
+}
+
+.fine {
+  margin-top: var(--hps-space-12);
+  color: var(--hps-text-muted);
+  font-size: var(--hps-text-sm);
+  line-height: var(--leading-normal);
+}
+
+/* ── 참여 방법 · 당첨 혜택 ── */
+.section {
+  padding: var(--hps-space-20);
+  border-radius: var(--hps-radius-card);
+  background: var(--hps-card-bg);
+  border: 1px solid var(--hps-border);
+}
+
+.sectionTitle {
+  margin-bottom: var(--hps-space-16);
+  font-size: var(--hps-text-xl);
+  font-weight: 700;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--hps-space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--hps-space-4);
+  padding: var(--hps-space-14) var(--hps-space-6);
+  border-radius: var(--hps-radius-lg);
+  background: var(--hps-bg-subtle);
+  text-align: center;
+}
+
+.step b {
+  font-size: var(--hps-text-md);
+  font-weight: 600;
+}
+
+.step span:last-child {
+  color: var(--hps-text-muted);
+  font-size: var(--hps-text-sm);
+  line-height: var(--leading-tight);
+}
+
+.stepIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-bottom: var(--hps-space-4);
+  border-radius: 50%;
+  background: var(--hps-blue-subtle);
+  color: var(--hps-blue);
+}
+
+.prizeList {
+  display: grid;
+  gap: var(--hps-space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.prizeItem {
+  display: flex;
+  align-items: center;
+  gap: var(--hps-space-10);
+  padding: var(--hps-space-12) var(--hps-space-14);
+  border: 1px solid var(--hps-border);
+  border-radius: var(--hps-radius-md);
+  font-size: var(--hps-text-md);
+  font-weight: 600;
+}
+
+.prizeItemIcon {
+  flex: none;
+  color: var(--hps-blue);
+}
+
+/* 유의사항 — 다른 카드와 같은 모양의 따로 된 칸 */
+.notice {
+  padding: var(--hps-space-20);
+  border-radius: var(--hps-radius-card);
+  background: var(--hps-card-bg);
+  border: 1px solid var(--hps-border);
+}
+
+.noticeTitle {
+  margin-bottom: var(--hps-space-12);
+  font-size: var(--hps-text-xl);
+  font-weight: 700;
+}
+
+.notice ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hps-space-6);
+  margin: 0;
+  padding-left: var(--hps-space-16);
+  list-style: disc;
+  color: var(--hps-text-body);
+  font-size: var(--hps-text-md);
+  line-height: var(--leading-normal);
+}
+
+/* ── 완료 ── */
+.done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--hps-space-40) var(--hps-space-20);
+  border-radius: var(--hps-radius-card);
+  background: var(--hps-card-bg);
+  text-align: center;
+  border: 1px solid var(--hps-border);
+}
+
+.doneIcon {
+  color: var(--color-success);
+}
+
+.doneTitle {
+  margin: var(--hps-space-16) 0 var(--hps-space-8);
+  font-size: var(--hps-text-3xl);
+  font-weight: 700;
+}
+
+.doneText {
+  margin-bottom: var(--hps-space-24);
+  color: var(--hps-text-muted);
+  font-size: var(--hps-text-md);
+  line-height: var(--leading-normal);
+}
+
+.donePrize {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--hps-space-4);
+  width: 100%;
+  padding: var(--hps-space-16);
+  border-radius: var(--hps-radius-lg);
+  background: var(--hps-blue-subtle);
+}
+
+.donePrize span {
+  color: var(--hps-text-body);
+  font-size: var(--hps-text-sm);
+  font-weight: 600;
+}
+
+.donePrize b {
+  color: var(--hps-blue);
+  font-size: var(--hps-text-xl);
+  font-weight: 700;
+}
+
+/* ── 당첨 팝업 몸 ── */
+.result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.resultIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--hps-blue-subtle);
+  color: var(--hps-blue);
+}
+
+.resultTitle {
+  margin: var(--hps-space-12) 0 var(--hps-space-16);
+  font-size: var(--hps-text-3xl);
+  font-weight: 700;
+}
+
+.resultBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--hps-space-4);
+  width: 100%;
+  padding: var(--hps-space-20) var(--hps-space-12);
+  border: 1px solid var(--hps-blue-border);
+  border-radius: var(--hps-radius-lg);
+  background: var(--hps-blue-tint);
+}
+
+.resultTop {
+  color: var(--hps-text-body);
+  font-size: var(--hps-text-lg);
+  font-weight: 600;
+}
+
+/* 당첨 숫자 — 사내 글자 단계의 가장 큰 값(4xl)을 1.5배로. 팝업의 단 하나뿐인 강조 */
+.resultMain {
+  color: var(--hps-blue);
+  font-size: calc(var(--hps-text-4xl) * 1.5);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+  letter-spacing: -0.03em;
+}
+
+.resultMain small {
+  font-size: var(--hps-text-2xl);
+}
+
+.resultText {
+  margin-top: var(--hps-space-16);
+  color: var(--hps-text-body);
+  font-size: var(--hps-text-md);
+  line-height: var(--leading-normal);
+}
+
+/* ── 미리보기(?demo=1, 개발 서버 전용) ── */
+.demoBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--hps-space-8);
+  margin-top: var(--hps-space-12);
+}
+
+.demoAgain {
+  margin-top: var(--hps-space-20);
+}

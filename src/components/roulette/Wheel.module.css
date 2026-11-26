@@ -1,0 +1,126 @@
+/* 룰렛 판 — 오피스 파랑(--hps-blue) 계열. 칸은 파랑 · 옅은 파랑 · 중간 파랑을 번갈아 */
+
+.wrap {
+  position: relative;
+  width: min(84vw, 340px);
+  aspect-ratio: 1;
+  margin: 0 auto;
+}
+
+.disc {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow: var(--hps-shadow-dropdown);
+  will-change: transform;
+}
+
+/* 5초 동안 빠르게 돌다 천천히 멈춘다 */
+.spinning {
+  transition: transform 5.2s cubic-bezier(0.12, 0.72, 0.1, 1);
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.rim {
+  fill: var(--hps-blue);
+  stroke: var(--hps-blue-hover);
+  stroke-width: 4;
+}
+
+.dot {
+  fill: var(--hps-card-bg);
+}
+
+.dotDim {
+  fill: var(--hps-blue-border);
+}
+
+.sliceDeep {
+  fill: var(--hps-blue);
+}
+
+
+.sliceLight {
+  fill: var(--hps-blue-subtle);
+}
+
+.divider {
+  stroke: var(--hps-card-bg);
+  stroke-width: 2;
+}
+
+.top,
+.main {
+  font-family: inherit;
+}
+
+.top {
+  font-weight: 600;
+}
+
+.main {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.textLight {
+  fill: var(--hps-text-on-accent);
+}
+
+.textDark {
+  fill: var(--hps-blue-hover);
+}
+
+.pointer {
+  position: absolute;
+  top: calc(var(--hps-space-12) * -1);
+  left: 50%;
+  z-index: 2;
+  width: 36px;
+  height: 40px;
+  transform: translateX(-50%);
+}
+
+.pointerShape {
+  fill: var(--hps-text-primary);
+  stroke: var(--hps-card-bg);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+.hub {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--hps-space-2);
+  width: 25%;
+  aspect-ratio: 1;
+  border: 3px solid var(--hps-blue);
+  border-radius: 50%;
+  background: var(--hps-card-bg);
+  color: var(--hps-blue);
+  font-size: var(--hps-text-md);
+  font-weight: 700;
+  transform: translate(-50%, -50%);
+  box-shadow: var(--hps-shadow-card);
+}
+
+.crown {
+  color: var(--hps-blue);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinning {
+    transition-duration: 1.2s;
+  }
+}

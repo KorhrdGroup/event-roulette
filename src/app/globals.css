@@ -1,0 +1,8 @@
+/* 한평생오피스 디자인 시스템 — 토큰(tokens.css) · 기본 스타일(base.css) · Pretendard 글꼴(public/fonts)을 그대로 쓴다.
+   부품은 src/components/ui (오피스 src/components/ui 에서 옮겨 온 Button · Input/Field · Checkbox · Badge · Modal) */
+@import "../styles/base.css";
+
+/* 랜딩은 머리줄 · 본문 · 바닥줄이 한 장으로 이어지게 흰 바탕 (오피스 기본 바탕 --hps-bg 대신) */
+body {
+  background-color: var(--hps-card-bg);
+}

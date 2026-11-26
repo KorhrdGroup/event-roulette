@@ -1,0 +1,27 @@
+/* 휴대폰 인증 팝업 — 칸 사이 16 (팝업 폼 규칙) */
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hps-space-16);
+}
+
+.timer,
+.timerOver {
+  font-size: var(--hps-text-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer {
+  color: var(--hps-blue);
+}
+
+.timerOver {
+  color: var(--color-danger);
+}
+
+.foot {
+  color: var(--hps-text-muted);
+  font-size: var(--hps-text-sm);
+}

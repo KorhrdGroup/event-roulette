@@ -1,0 +1,328 @@
+/* 폼 값 선택 칩 — 단일(라디오) / 다중(체크박스). 2026-09 신설.
+ *
+ * FilterChip(목록 거르기, 30px · radius md)과 색 문법은 같지만 역할이 다르다:
+ *   ChoiceChip 은 저장될 "값"을 고르는 폼 컨트롤 — 입력창과 같은 높이(36 / sm 32), radius md.
+ *   다중 선택은 고른 칩 앞에만 체크 마크(문의 상세 패널 취득사유와 같은 모양) — 선택하면 폭이 그만큼 늘어난다.
+ *   단일 선택은 마크 없이 색만. 체크가 보이면 "여러 개 골라도 된다"는 신호. */
+
+.group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--hps-space-6);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--hps-space-6);
+  height: var(--control-height, 36px);
+  padding: 0 var(--hps-space-14);
+  border: 1px solid var(--hps-border);
+  border-radius: var(--hps-radius-md);
+  background: var(--hps-card-bg);
+  color: var(--hps-text-body);
+  font-family: inherit;
+  font-size: var(--hps-text-base);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.sm .chip {
+  height: var(--control-height-sm, 32px);
+  padding: 0 var(--hps-space-12);
+  font-size: var(--hps-text-sm);
+}
+.chip:hover:not(:disabled) {
+  border-color: var(--hps-border-hover);
+  background: var(--hps-bg-subtle);
+}
+.chip:focus-visible {
+  outline: none;
+  box-shadow: var(--hps-focus-ring);
+}
+.chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 선택됨 — FilterChip selected 와 같은 색 조합 */
+.chip.checked {
+  border-color: var(--hps-blue);
+  background: var(--hps-blue-subtle);
+  color: var(--hps-blue);
+  font-weight: 600;
+}
+.chip.checked:hover:not(:disabled) {
+  border-color: var(--hps-blue);
+  background: var(--hps-blue-subtle);
+}
+
+/* 굵기 전환 시 폭이 늘어 옆 칩이 밀리는 것 방지 — 굵은 글자 폭을 라벨에 미리 확보 */
+.label {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+.label::after {
+  content: attr(data-label);
+  display: block;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  font-weight: 600;
+}
+
+/* tone — 값 자체가 좋음/나쁨 뜻을 갖는 자리(업무일지 잘된/아쉬운 이유)에서만. 선택 색이 status 토큰으로 바뀐다 */
+.success .chip.checked,
+.success .chip.checked:hover:not(:disabled) {
+  border-color: var(--color-success);
+  background: var(--color-success-subtle);
+  color: var(--color-success-text);
+}
+.warning .chip.checked,
+.warning .chip.checked:hover:not(:disabled) {
+  border-color: var(--color-warning-text);
+  background: var(--color-warning-subtle);
+  color: var(--color-warning-text);
+}
+
+/* tone="neutral" 무채색(2026-10-28) — FilterChip neutral 과 같은 색: 테두리는 안 고른 칩과 같은 회색, 선택 = 진한 글씨 + 회색 바탕 */
+.neutral .chip.checked,
+.neutral .chip.checked:hover:not(:disabled) {
+  border-color: var(--hps-border);
+  background: var(--hps-fill);
+  color: var(--hps-text-primary);
+}
+
+/* 다중 선택 체크 마크 — 선택된 칩에만 그린다 (선택하면 그만큼 폭이 늘어남, 2026-09 결정). 색은 칩 글자색을 따른다 */
+.mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  color: currentColor;
+}
+.mark svg {
+  width: 10px;
+  height: 7px;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+/* 타일 — 그림 위 · 이름 아래, 높이는 내용대로(2026-10-28 콘텐츠 스튜디오 프레젠테이션 구도).
+   그림은 고르기 전엔 옅게(text-tertiary), 고르면 칩 글자색을 따른다 */
+.group .chip.tile {
+  flex-direction: column;
+  height: auto;
+  padding: var(--hps-space-8) var(--hps-space-4);
+}
+.tile .icon {
+  justify-content: center;
+  width: 100%;
+  color: var(--hps-text-tertiary);
+}
+.tile.checked .icon {
+  color: inherit;
+}
+
+/* ── 격자 배치 — <ChoiceCard> 용 ──
+   칩은 줄줄이 이어 붙는 가로줄이면 되지만, 카드는 설명이 들어가 폭이 필요하다.
+   2열 고정이다. 한때 minmax(220px, 1fr) 로 두었는데 실제로 쓰이는 자리(예산 배정 모달의
+   왼쪽 칸)가 265px 라 두 장이 위아래로 떨어졌다 — 나란히 놓고 비교하라고 만든 배치이니
+   좁아도 2열을 지킨다. minmax(0, ...) 이 있어야 긴 글이 칸을 밀어내지 않는다. */
+.group.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  width: 100%;
+  gap: var(--hps-space-12);
+}
+
+/* 세 갈래를 한 줄에 — 이미지·영상·캐러셀처럼 셋이 한 묶음일 때.
+   2열로 두면 셋째가 혼자 다음 줄로 내려가 한 묶음으로 안 읽힌다 (2026-09-14). */
+.group.grid.gridCols3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* 셋은 좁은 화면에서 한 줄에 안 들어간다 — 원래 .formatRow 가 700px 이하에서
+   세로로 쌓던 것을 그대로 옮겼다. 2열은 좁아도 버티므로 건드리지 않는다. */
+@media (max-width: 700px) {
+  .group.grid.gridCols3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 넷씩 — 좁은 화면에서는 둘씩 */
+.group.grid.gridCols4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 700px) {
+  .group.grid.gridCols4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* 항목 수가 그때그때 다른 자리 — 폭이 되는 만큼 채운다.
+   220px 는 권한 관리 .positionGrid 가 쓰던 값 그대로다. */
+.group.grid.gridColsAuto {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+/* 세로 목록 — 위아래로 훑어 하나 고르는 자리 */
+.group.column {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  gap: var(--hps-space-8);
+}
+
+/* ── 값 선택 카드 ──
+   칩과 같은 일을 하지만 설명을 읽고 고르는 자리. 높이가 내용에 따라 달라지므로
+   control-height 를 쓰지 않는다 — 대신 한 줄에 놓인 카드끼리는 격자가 높이를 맞춘다.
+   여백·모서리 두 단은 전수조사(2026-09-14)에서 실제로 쓰이던 두 덩어리다:
+     md  12 / radius-md   (.optionCard · .matchCard · .modalOptionCard · .statusCard)
+     lg  16 / radius-card (.typeCard · .positionCard · .formatCard) */
+.card {
+  display: flex;
+  align-items: center;
+  gap: var(--hps-space-12);
+  width: 100%;
+  border: 1px solid var(--hps-border);
+  background: var(--hps-card-bg);
+  color: var(--hps-text-body);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.cardMd {
+  padding: var(--hps-space-12);
+  border-radius: var(--hps-radius-md);
+}
+.cardLg {
+  padding: var(--hps-space-16);
+  border-radius: var(--hps-radius-card);
+}
+
+.card:hover:not(:disabled) {
+  border-color: var(--hps-border-hover);
+  background: var(--hps-bg-subtle);
+}
+.card:focus-visible {
+  outline: none;
+  box-shadow: var(--hps-focus-ring);
+}
+.card:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 선택됨 — 파랑 테두리 + 옅은 파랑 배경.
+   글자색까지 파랗게 물들이는 칩과 달리 카드는 본문 색을 지킨다. 설명이 두어 줄이라
+   전부 파래지면 읽는 글이 아니라 선택 표시처럼 보인다. */
+.card.cardOn,
+.card.cardOn:hover:not(:disabled) {
+  border-color: var(--hps-blue);
+  background: var(--hps-blue-subtle);
+}
+
+/* 본문 기둥 — 제목 줄·설명·보조 문구가 세로로 쌓인다.
+   왼쪽 동그라미가 있든 없든 이 기둥이 남은 폭을 다 쓴다. */
+.cardMain {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--hps-space-4);
+  flex: 1;
+  min-width: 0;
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: var(--hps-space-8);
+  width: 100%;
+  min-width: 0;
+}
+
+/* ── 고르는 표시 ──
+   네모는 여럿 고를 수 있다는 뜻, 동그라미는 하나만 고른다는 뜻.
+   칩의 .mark 와 달리 안 고른 것에도 그린다 — 빈 네모/빈 동그라미가 있어야
+   "고르는 자리" 로 읽힌다.
+   동그라미는 .card 의 직계 자식이라 align-items: center 가 세로 가운데를 잡고,
+   네모는 .cardHead 안에서 badge 뒤에 붙어 제목 줄 오른쪽 끝에 선다. */
+.markBox,
+.markDot {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--hps-border-hover);
+  background: var(--hps-card-bg);
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.markBox {
+  border-radius: var(--hps-radius-sm);
+  color: var(--hps-text-on-accent);
+}
+
+.markBox svg {
+  width: 9px;
+  height: 6px;
+}
+
+.markDot {
+  border-radius: var(--hps-radius-full);
+}
+
+.card.cardOn .markBox {
+  border-color: var(--hps-blue);
+  background: var(--hps-blue);
+}
+
+/* 파랑 테두리 안에 흰 틈, 가운데 다시 파랑 — 브라우저 기본 라디오와 같은 모양 */
+.card.cardOn .markDot {
+  border-color: var(--hps-blue);
+  background: var(--hps-blue);
+  box-shadow: inset 0 0 0 3px var(--hps-card-bg);
+}
+
+.cardTitle {
+  font-size: var(--hps-text-base);
+  font-weight: 600;
+  color: var(--hps-text-primary);
+  min-width: 0;
+  flex: 1;
+}
+
+/* 고른 카드도 제목은 파랗게 물들이지 않는다 — 테두리와 배경이 이미 선택을 말하고,
+   설명까지 있는 카드에서 글자색까지 바뀌면 읽는 글이 아니라 표시처럼 보인다.
+   (칩은 반대다. 글자밖에 없으니 색이 곧 선택 표시다.) */
+
+.cardDesc {
+  font-size: var(--hps-text-sm);
+  line-height: 1.5;
+  color: var(--hps-text-secondary);
+}
+
+.cardMeta {
+  margin-top: var(--hps-space-2);
+  font-size: var(--hps-text-xs);
+  color: var(--hps-text-muted);
+}

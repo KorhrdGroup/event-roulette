@@ -1,0 +1,34 @@
+/* 바닥줄 — 바로소셜 form.module.css .footer 를 오피스 토큰으로 옮겼다 */
+
+.footer {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: var(--hps-space-48) var(--hps-space-32) var(--hps-space-40);
+  border-top: 1px solid var(--hps-border);
+  background: var(--hps-card-bg);
+  color: var(--hps-text-muted);
+  font-size: var(--hps-text-sm);
+  line-height: 1.8;
+}
+
+.logo {
+  display: block;
+  width: 218px;
+  height: auto;
+  margin-bottom: var(--hps-space-4);
+}
+
+.links {
+  display: flex;
+  gap: var(--hps-space-10);
+  margin-top: var(--hps-space-6);
+}
+
+.links a {
+  color: var(--hps-text-body);
+  text-decoration: none;
+}
+
+.copyright {
+  margin-top: var(--hps-space-12);
+}

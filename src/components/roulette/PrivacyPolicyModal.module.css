@@ -1,0 +1,30 @@
+/* 개인정보처리방침 팝업 — 바로소셜 .modalPrivacyItem 을 오피스 토큰으로 옮겼다 */
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hps-space-20);
+  color: var(--hps-text-body);
+  font-size: var(--hps-text-md);
+  line-height: var(--leading-normal);
+}
+
+.body h4 {
+  margin: 0 0 var(--hps-space-8);
+  color: var(--hps-text-primary);
+  font-size: var(--hps-text-md);
+  font-weight: 600;
+}
+
+.body p {
+  margin: 0;
+}
+
+.body p + p {
+  margin-top: var(--hps-space-8);
+}
+
+.full {
+  color: var(--hps-blue);
+  font-size: var(--hps-text-sm);
+}

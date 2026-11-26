@@ -1,0 +1,257 @@
+/* 공유 버튼 — 전 페이지 버튼을 variant/size 시스템으로 통일 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--hps-space-6);
+  border: 1px solid transparent;
+  border-radius: var(--hps-radius-button);
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--hps-focus-ring);
+}
+/* 아이콘은 줄어들지 않는다 — 좁은 자리에서 글자가 먼저 줄어야 아이콘이 안 찌그러진다.
+   로컬 버튼마다 `.xxxBtn svg { flex-shrink: 0 }` 를 따로 두고 있었다(이관하다 발견). */
+.btn > svg {
+  flex-shrink: 0;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── size ── */
+/* xs — 아이콘 전용(28px). iconOnly 와 함께 쓴다.
+   글자 버튼에는 쓰지 않는다: 28px 글자 버튼은 sm(32px)로 올린다.
+   표 행 안에 얹히는 아이콘 버튼의 집이고, 이 단계가 없어서 69곳이 로컬 CSS 로 샜다. */
+.xs {
+  height: var(--control-height-xs, 28px);
+  padding: 0 var(--hps-space-6);
+  font-size: var(--hps-text-sm);
+}
+.sm {
+  height: var(--control-height-sm, 32px);
+  padding: 0 var(--hps-space-12);
+  font-size: var(--hps-text-sm);
+}
+.md {
+  height: var(--control-height, 36px);
+  padding: 0 var(--hps-space-16);
+  font-size: var(--hps-text-md);
+}
+.lg {
+  height: var(--control-height-lg, 44px);
+  padding: 0 var(--hps-space-20);
+  font-size: var(--hps-text-md);
+}
+
+/* touch — 손가락으로 누르는 화면의 전체폭 CTA 전용 (56px).
+   lg(44px)가 마우스 기준 최대라, 모바일 전자계약 플로우가 자기 크기를 따로 갖고 있었다.
+   높이만 다른 게 아니다: radius 가 16px(--hps-radius-xl), 글자가 18px, 굵기가 700 이다 —
+   큰 면적에 8px 모서리는 각져 보이고, 600 은 18px 옆에서 가늘어 보인다.
+   글자 18px 는 전자계약 '다음' 버튼에서 가져왔다. 같은 줄의 '이전' 은 16px 이었는데
+   한 크기로 묶으면서 18px 로 맞췄다 (2026-09-17 결정).
+   데스크톱 툴바에 쓰지 마라. "크게 강조하고 싶다" 는 lg 에 variant 로 푼다. */
+.touch {
+  height: 56px;
+  padding: 0 var(--hps-space-20);
+  font-size: var(--hps-text-xl);
+  font-weight: 700;
+  border-radius: var(--hps-radius-xl);
+}
+
+/* ── variant ── */
+.primary {
+  background: var(--hps-blue-fill);
+  color: var(--hps-text-on-accent);
+}
+.primary:hover:not(:disabled) {
+  background: var(--hps-blue-fill-hover);
+}
+
+.secondary {
+  background: var(--hps-card-bg);
+  color: var(--hps-text-primary);
+  border-color: var(--hps-border-hover);
+}
+.secondary:hover:not(:disabled) {
+  background: var(--hps-bg-subtle);
+}
+
+/* neutral — secondary 와 글자는 같고 **채움만 회색**이다 (테두리 없음).
+   쓰는 자리가 정해져 있다: **주 버튼 옆에 서는 두 번째 행동**(저장 옆 취소, 다음 옆 이전)과
+   **아이콘 전용 버튼**. --hps-bg 는 페이지 바탕색이라, 주 버튼이 옆에 있으면 위계로 읽히지만
+   혼자 서면 바탕에 묻혀 비활성처럼 보인다 — 단독 액션은 secondary(흰+테두리)를 쓴다.
+   '추가' 처럼 더하는 액션은 soft·outline 으로 간다 (2026-09-17 결정).
+   아이콘 버튼은 모양 자체가 누르는 것이라고 말하므로 혼자 서도 된다. */
+.neutral {
+  background: var(--hps-fill);
+  color: var(--hps-text-primary);
+  border-color: transparent;
+}
+.neutral:hover:not(:disabled) {
+  background: var(--hps-fill-hover);
+}
+
+/* outline — 회색 테두리 + 파랑 글자(보조 액션용).
+ * 다운로드·이관 같은 툴바 액션 자리에 쓰이며, primary와 나란히 놓였을 때
+ * 정보 위계를 살리기 위해 테두리를 회색으로 물러남. */
+.outline {
+  background: var(--hps-card-bg);
+  color: var(--hps-blue);
+  border-color: var(--hps-border-hover);
+}
+.outline:hover:not(:disabled) {
+  background: var(--hps-blue-subtle);
+  border-color: var(--hps-blue);
+}
+
+/* ghost 글자는 --color-neutral-text (2026-09-28). --hps-text-secondary 는 흰 면 3.04 ·
+   회색 면 2.76 이라 글자·아이콘 모두 기준 밑이었다. 이 값은 「4.5 를 넘는 가장 옅은 회색」으로
+   만든 것이라 흰 5.03 · 옅은 회색 4.82 · 회색 면 4.57 로 셋 다 통과하면서 가장 약한 동작으로 남는다.
+   --hps-text-muted(흰 4.62 · 회색 면 4.19)는 회색 면에서 모자라 접었다. */
+.ghost {
+  background: transparent;
+  color: var(--color-neutral-text);
+}
+.ghost:hover:not(:disabled) {
+  background: var(--hps-hover-bg);
+  color: var(--hps-text-primary);
+}
+/* ghost 글자 버튼은 좌우 여백을 줄인다 (2026-10-15 사용자 결정) — 테두리 · 바탕이 없어 평소엔 글자만 보이는데,
+   여백이 다른 버튼과 같으면(md 16) 글자가 옆 칸 · 버튼에서 동떨어져 떠 보였다. 높이 · 글자는 그대로, 손을 올리면 회색 면이 그 폭으로 뜬다.
+   아이콘 전용(iconOnly)은 정사각이라 제외한다. sm 12 → 6 · md 16 → 6 · lg 20 → 12.
+   호버 면은 남긴다 — 글자만 보이는 버튼이 「눌린다」는 걸 알리는 거의 유일한 신호라서(호버를 없애는 안은 접었다) */
+.ghost.sm:not(.iconOnly) {
+  padding: 0 var(--hps-space-6);
+}
+.ghost.md:not(.iconOnly) {
+  padding: 0 var(--hps-space-6);
+}
+.ghost.lg:not(.iconOnly) {
+  padding: 0 var(--hps-space-12);
+}
+
+/* soft — 옅은 파랑(tonal). primary보다 약한 강조
+
+   **글자는 한 단계 진한 파랑이다 (2026-09-23).** --hps-blue 는 연파랑 면 위에서 3.94 라
+   기준(4.5) 아래였다. --hps-blue-hover 로 4.94 — <Badge tone="info"> 와 같은 값이다.
+   hover 면(--hps-blue-subtle-hover) 위에선 4.45 로 0.05 모자라지만 마우스가 올라간
+   순간에만 생기는 상태라 받아들였다. hover 를 테두리로 바꾸는 안(4.94 유지)도 있었지만
+   이 버튼만 반응 모양이 달라져서 접었다. */
+.soft {
+  background: var(--hps-blue-subtle);
+  color: var(--hps-blue-hover);
+}
+.soft:hover:not(:disabled) {
+  background: var(--hps-blue-subtle-hover);
+}
+
+/* success — 초록 채움 (엑셀 다운로드·승인·저장 등 확정적 긍정 액션 전용) */
+.success {
+  background: var(--color-success-fill);
+  color: var(--hps-text-on-accent);
+}
+.success:hover:not(:disabled) {
+  background: var(--color-success-fill-hover);
+}
+
+/* successSoft — 연초록 채움 + 초록 텍스트. dangerSoft 의 짝이다.
+   danger 는 채움·soft·outline 셋을 다 갖췄는데 success 만 채움 하나뿐이라,
+   "완료·승인됨" 을 옅게 말하고 싶은 자리가 전부 로컬 CSS 로 샜다.
+
+   **글자는 -text 단계를 쓴다 (2026-09-18).** --color-success 는 "흰 글자를 얹는 채움"
+   기준의 4.50 이라, 그걸 연초록(#E2FFE9) 위 글자로 돌려 쓰면 4.23 으로 미달이었다.
+   <Badge tone="success"> 는 처음부터 --color-success-text 를 써서 8.25 로 통과하고
+   있었는데 버튼만 안 맞춰져 있었다. 이제 뱃지와 같은 값이다. */
+.successSoft {
+  background: var(--color-success-subtle);
+  color: var(--color-success-text);   /* 연초록 위 8.25 */
+}
+/* hover — 예전엔 평소와 같은 색이라 손을 올려도 아무 변화가 없었다(2026-10-01 사용자 지적).
+   공용 hover 오버레이(--hps-hover-bg)를 얹는다. 글자 대비 8.25 → 7.57 */
+.successSoft:hover:not(:disabled) {
+  background-image: linear-gradient(var(--hps-hover-bg), var(--hps-hover-bg));
+}
+
+/* danger — 채움형(파괴적 primary) */
+.danger {
+  background: var(--color-danger-fill);
+  color: var(--hps-text-on-accent);
+}
+.danger:hover:not(:disabled) {
+  background: var(--color-danger-fill-hover);
+}
+/* dangerSoft — 연빨강 채움 + 빨강 텍스트(보더 없음)
+
+   **글자를 한 단계 내렸다 (2026-09-18).** --color-danger 의 4.51 은 흰 바탕 기준이고,
+   연빨강(#FEECEE) 위에서는 3.96 으로 떨어진다. 이 조합은 DESIGN_SYSTEM.md §2.8 이
+   "따로 볼 자리" 로 적어 두고 있던 미결이었고, --color-danger-text 를 합칠 때
+   흰 면에서만 재는 바람에 4.37 → 3.96 으로 한 번 더 내려가 있었다.
+   --color-danger-hover 는 이름이 hover 지만 값(#CC1123)이 마침 필요한 단계다. */
+.dangerSoft {
+  background: var(--color-danger-subtle);
+  color: var(--color-danger-hover);   /* 연빨강 위 5.02 */
+}
+/* hover — successSoft 와 같은 이유 · 같은 방법. 글자 대비 5.02 → 4.62 */
+.dangerSoft:hover:not(:disabled) {
+  background-image: linear-gradient(var(--hps-hover-bg), var(--hps-hover-bg));
+}
+
+/* dangerOutline — 흰 배경 + 빨강 텍스트/보더 */
+.dangerOutline {
+  background: var(--hps-card-bg);
+  color: var(--color-danger);
+  border-color: var(--color-danger-subtle);
+}
+.dangerOutline:hover:not(:disabled) {
+  background: var(--color-danger-subtle);
+}
+
+/* dangerGhost — 확인창·실행취소가 받아 주는 삭제 (2026-09-23 신설).
+   DESIGN_SYSTEM.md §2.8 「② 지켜짐」 을 공용으로: 평소 --hps-text-muted(4.62), 손이 닿으면 빨강.
+   전엔 이 모양이 공용에 없어서 화면마다 로컬 CSS 로 그리거나, 평소에도 빨간 dangerSoft 를 썼다 —
+   휴지통 목록은 471행 전부에 빨간 「영구삭제」가 서서 오른쪽에 빨간 세로줄이 생겼다(원칙 5).
+   hover 는 dangerSoft 의 평소 모습과 같다 — 옅은 면 위 글자라 danger-hover(5.02)를 쓴다. */
+.dangerGhost {
+  background: transparent;
+  color: var(--hps-text-muted);
+}
+.dangerGhost:hover:not(:disabled) {
+  background: var(--color-danger-subtle);
+  color: var(--color-danger-hover);
+}
+
+/* dashed — '추가' 전용. 아직 없는 것을 만드는 자리라 테두리를 끊어 둔다.
+   전수조사(2026-09-11) 결과 19곳 13클래스가 같은 모양을 각자 그리고 있었고,
+   그 13가지가 전부 hover 에서 파랑으로 갔다 — 여기 파랑은 내가 정한 게 아니라
+   이미 그렇게 쓰이고 있던 것이다. 채움형 버튼 옆에서 '빈 자리'로 읽혀야 하므로
+   배경은 비워 둔다. */
+.dashed {
+  background: transparent;
+  color: var(--hps-text-secondary);
+  border: 1px dashed var(--hps-border-hover);
+}
+.dashed:hover:not(:disabled) {
+  /* 빈 자리가 hover 에서 옅게 채워진다. 전수조사에서 배경까지 주는 쪽이 8곳,
+     테두리·글자만 바꾸는 쪽이 7곳으로 다수를 따랐다 (2026-09-11). */
+  background: var(--hps-fill);
+  border-color: var(--hps-blue);
+  color: var(--hps-blue);
+}
+
+/* ── modifiers ── */
+.fullWidth {
+  width: 100%;
+}
+.iconOnly {
+  padding: 0;
+  aspect-ratio: 1 / 1;
+}

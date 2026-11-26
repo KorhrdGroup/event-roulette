@@ -1,0 +1,813 @@
+/* ============================================================================
+   DESIGN TOKENS — Single Source of Truth
+   ----------------------------------------------------------------------------
+   Canonical namespace: --hps-*   (실제 앱 전반에서 ~1,570회 사용)
+   → 새 컴포넌트/스타일은 반드시 --hps-* 또는 아래 semantic 토큰만 사용한다.
+
+   Bridge namespaces (--color-*, --text-*, --radius-*, --space-*, --shadow-*)
+   → 레거시 호환용. 정본 값과 "같은 색/크기"로 정렬되어 있어 어느 쪽을 써도
+     결과가 동일하다. 신규 코드에서는 사용하지 않는다.
+
+   색상은 모두 LIGHT 테마 기준. 다크 오버라이드는 파일 하단.
+   원칙: 하드코딩 대신 토큰. Primary 파랑은 #2469FF(HDS 6단계) 하나로 통일.
+   ============================================================================ */
+
+/* [data-theme="light"] — **라이트 고정 구역** (2026-11-23). 다크를 켜도 밝게 남아야 하는 것(콘텐츠 스튜디오 결과물 등)의
+   바깥 요소에 이 속성을 달면, 그 안에서 모든 토큰이 라이트 값으로 다시 선언된다. */
+:root,
+[data-theme="light"] {
+  /* 이 줄을 지우면 안 된다 (2026-11-23). 빌드가 light-dark(a, b) 를 `var(--lightningcss-light, a) var(--lightningcss-dark, b)` 로
+     바꾸는데, 그 두 변수는 color-scheme 이 선언된 곳에만 생긴다. 뿌리에 선언이 없으면 라이트에서 두 값이 다 나와
+     색이 무효가 된다 — 마케팅 CRM · 포탈의 색 720곳이 통째로 빠진다. 개발 서버는 변환하지 않아 드러나지 않는다. */
+  color-scheme: light;
+
+  /* ── Brand / Primary ─────────────────────────────────────────────
+     HDS 블루 팔레트 기준 (2026-09 재정렬, 구 #3182F6):
+     메인 6단계 / hover 5단계 / subtle 10단계 / subtle-hover 10↔9 보간 */
+  --hps-blue: #2469FF;
+  --hps-blue-hover: #0051FF;
+  --hps-blue-subtle: #E5EDFF;
+  --hps-blue-subtle-hover: #D4E2FF;
+  /* 테두리 단계 — 옅은 배경(subtle)과 채움(blue) 사이가 비어 있어서 화면마다 손으로
+     적던 자리다(구 #BFDBFE·#93C5FD 외 사촌 13종, 112곳). 밝기는 그 값 그대로 두고
+     색상만 집안 파랑(221°)에 맞췄다. 안내 버튼·칩의 테두리와 그 hover 가 짝이다. */
+  --hps-blue-border: #BED3FF;
+  --hps-blue-border-hover: #91B4FF;
+
+  /* 채움 전용 (2026-11-23, 다크모드 준비). **흰 글자가 얹히는 면**(버튼 · solid 뱃지 · 선택된 칩)의 바탕에만 쓴다.
+     --hps-blue 는 글자 · 테두리 · 점 · 막대에도 쓰여서, 어두운 면에서 읽히려면 밝아져야 한다. 그런데 밝아지면
+     그 위 흰 글자가 안 읽힌다(3.35). 그래서 채움만 떼어 냈다 — 다크에서 --hps-blue 는 밝아지고 이쪽은 남는다.
+     라이트에서는 같은 값이다. 글자가 안 얹히는 점 · 막대 · 표시선은 --hps-blue 그대로 둔다. */
+  --hps-blue-fill: var(--hps-blue);
+  --hps-blue-fill-hover: var(--hps-blue-hover);
+
+  /* 초록은 --color-success-* 4단계가 정본이다 (아래 Status 참고).
+     --hps-green* 은 <Button variant="success"> 이 쓰던 이름이라 alias 로만 남긴다. */
+  --hps-green: var(--color-success);
+  --hps-green-hover: var(--color-success-hover);
+  --hps-green-subtle: var(--color-success-subtle);
+
+  /* ── Chart series (단순 구분용 순환 팔레트) ──────────────────────
+     시리즈 색은 "구분"이 목적이므로 브랜드 톤보다 상호 구분성이 우선.
+     최소 상호 ΔE 21 로 8색을 배치했다. 9개 이상이면 1번부터 순환한다.
+     JS 차트는 var() 를 못 쓰므로 src/lib/chartColors.ts 가 같은 값을 들고 있다 — 둘을 함께 고친다.
+     상태·의미가 있는 색(등록완료·실패 등)은 이 팔레트가 아니라 --color-{success,danger,warning} 을 쓴다. */
+  --hps-chart-1: #2469FF;  /* 파랑 — 브랜드/1순위 */
+  --hps-chart-2: #16A34A;  /* 초록 */
+  --hps-chart-3: #F59E0B;  /* 앰버 */
+  --hps-chart-4: #8B5CF6;  /* 보라 */
+  --hps-chart-5: #06B6D4;  /* 시안 */
+  --hps-chart-6: #EC4899;  /* 핑크 */
+  --hps-chart-7: #F97316;  /* 오렌지 */
+  --hps-chart-8: #64748B;  /* 슬레이트 — 기타/미분류 */
+
+  /* ── 대메뉴 아이콘 색 (메뉴 v3, 2026-09-15) ──────────────────────
+     레일 대메뉴 12칸의 아이콘 색. 차트 팔레트와 목적이 다르다 — 차트는 "서로
+     구분되는 것"이 전부라 브랜드에서 멀어져도 되지만, 이건 로고 옆에 상시로
+     붙어 있는 면이라 브랜드 톤 안에 있어야 한다.
+     그래서 파랑·인디고·바이올렛·틸을 주력(8칸)으로 쓰고, 따뜻한 색은 성격이
+     분명한 세 칸(게시판·캘린더·근태)에만 악센트로 뒀다. 홈이 브랜드 파랑
+     그대로라 나머지 색의 채도·명도 기준점이 된다.
+     아이콘 모양은 src/components/layout/navColorIcons.tsx — 색은 currentColor 로 받는다. */
+  --hps-nav-home: #2469FF;        /* 브랜드 블루 — 기준점 */
+  --hps-nav-workspace: #5B5BD6;   /* 인디고 */
+  --hps-nav-sales-hub: #0E9384;   /* 틸 — 숫자·실적 */
+  --hps-nav-work: #7C5CF5;        /* 바이올렛 */
+  --hps-nav-mail: #2E90D9;        /* 스카이 — 블루 이웃 */
+  --hps-nav-board: #E0568A;       /* 로즈 — 알림판 */
+  --hps-nav-calendar: #E4573D;    /* 코럴 — 달력 관습 */
+  --hps-nav-attendance: #E09A2E;  /* 앰버 — 시간 */
+  --hps-nav-approvals: #12A05C;   /* 그린 — 승인 */
+  --hps-nav-hr: #4F6AF0;          /* 인디고블루 */
+  --hps-nav-manage: #64748B;      /* 슬레이트 — 중립 */
+  --hps-nav-org-chart: #0D8FA8;   /* 딥틸 */
+
+  /* ── 경영업무포탈 강조색 (2026-09-15) ────────────────────────────
+     포탈의 주요 버튼·사이드바는 남색이다. 오피스 파랑(#2469FF)과 뜻이 같지만
+     색이 다른데, 포탈을 파랑으로 바꾸면 쓰던 사람에게는 다른 제품이 된다.
+     그래서 색은 그대로 두고 이름만 토큰으로 올린다 — 화면마다 #243F73 을
+     손으로 적던 것을 여기 한 곳으로 모으는 것이 목적이다.
+
+     오피스 화면에서는 쓰지 않는다. 포탈 안에서만 --hps-blue 자리에 끼워 넣는다
+     (src/app/portal/portal.css 의 .portalPrimary 참고). */
+  --hps-portal-navy: #243F73;
+  --hps-portal-navy-hover: #1F3A68;
+
+  /* 포탈 팔레트 (2026-11-23, 다크모드 준비). 포탈 CSS 27개 파일이 hex 로 직접 적던 값 1,035곳을 이름으로 올렸다 —
+     **값은 그대로다**(남색 때와 같은 원칙: 색을 바꾸면 쓰던 사람에게 다른 제품이 된다). 오피스 화면에서는 쓰지 않는다.
+     남색 · 빨강은 채움과 글자를 나눴다: 바탕은 -navy* · -red-fill, 글자 · 선 · 도형은 -accent* · -red.
+     눈으로 구분되지 않던 사촌 값(채널 차 4 이하) 56곳은 가까운 이름으로 모았다. */
+  --hps-portal-ink: #1F2937;
+  --hps-portal-ink-2: #374151;
+  --hps-portal-body: #4B5563;
+  --hps-portal-gray: #6B7280;
+  --hps-portal-gray-faint: #9CA3AF;
+  --hps-portal-line: #E5E7EB;
+  --hps-portal-line-strong: #D5DAE3;
+  --hps-portal-line-stronger: #C8D0DE;
+  --hps-portal-line-soft: #EEF0F4;
+  --hps-portal-line-softer: #F1F3F6;
+  --hps-portal-surface: #F5F6F8;
+  --hps-portal-surface-tint: #FBFCFD;
+  --hps-portal-surface-cool: #F8FAFC;
+  --hps-portal-tint-blue: #F3F7FD;
+  --hps-portal-tint-blue-deep: #F0F4FA;
+  --hps-portal-accent: #243F73;
+  --hps-portal-accent-strong: #1F3A68;
+  --hps-portal-accent-deep: #1D3560;
+  --hps-portal-navy-deep: #1D3560;
+  --hps-portal-blue: #3D6EB0;
+  --hps-portal-link: #2563EB;
+  --hps-portal-red: #EF4444;
+  --hps-portal-red-fill: #EF4444;
+  --hps-portal-red-strong: #DC2626;
+  --hps-portal-red-deep: #B91C1C;
+  --hps-portal-red-line: #F0C4C4;
+  --hps-portal-red-subtle: #FDF5F5;
+  --hps-portal-green: #059669;
+  --hps-portal-green-bright: #16A34A;
+
+  /* ── Surface / Background ──────────────────────────────────────── */
+  --hps-bg: #F2F4F6;          /* 페이지 바탕 */
+  --hps-bg-subtle: #F9FAFB;   /* 가장 옅은 서피스 */
+  --hps-card-bg: #FFFFFF;     /* 카드/서피스 */
+  --hps-hover-bg: rgba(0, 0, 0, 0.04);  /* hover 오버레이 (모든 서피스 공용) */
+  --hps-hover: var(--hps-hover-bg);     /* alias */
+  --hps-bg-hover: var(--hps-hover-bg);  /* alias */
+  --hps-table-head-bg: #F9FAFB;         /* 테이블 헤더 배경 */
+  /* 회색 채움 (2026-11-23, 다크모드). 카드 위에 얹는 누르는 것의 바탕 — 회색 버튼 등.
+     라이트에서는 --hps-bg(페이지 바탕)와 같은 값이지만 다크에서 갈린다: 페이지 바탕은 카드보다 어둡고,
+     채움은 카드보다 밝아야 한다(어두우면 버튼이 아니라 파인 자리로 보인다). hover 는 한 단계 더. */
+  --hps-fill: #F2F4F6;
+  --hps-fill-hover: #E5E8EB;
+
+  /* 카드 위쪽만 아주 옅게 띄우는 서피스·그라디언트 스톱 (2026-09-14).
+     흰색에서 한두 단계 떨어진 값들이 화면마다 제각각이었다 — #FBFBFD · #FBFCFE ·
+     #FAFCFF 가 서로 1~2채널 차이로 흩어져 있었고, 옅은 파랑도 #F4F8FF · #F4F9FF 로 갈렸다.
+     눈으로 구분되지 않는 차이는 의도가 아니라 복사 자국이다. 세 단계로 모았다. */
+  --hps-surface-tint: #FBFCFE;      /* 흰색보다 반 단계 아래 — 카드·펼친 FAQ */
+  --hps-blue-tint: #F4F8FF;         /* 옅은 파랑 서피스 (그라디언트 위쪽) */
+  --hps-blue-tint-deep: #EEF5FF;    /* 그 한 단계 아래 (그라디언트 아래쪽) */
+  --hps-blue-tint-deep-rgb: 238 245 255;  /* 위 색에 알파를 얹을 때 */
+
+  /* AI 표식 (2026-11-04 「AI 에게 묻기」). 처음엔 제미나이식 파랑 → 보라 → 분홍이었다가
+     같은 날 사용자 「너무 제미나이 같다」 → 오피스 파랑 계열 한 갈래로. AI 를 부르는 자리에만 쓴다 */
+  --hps-ai-blue: #2469FF;   /* = --hps-blue */
+  --hps-ai-violet: #4F7DFF; /* 이름은 그대로(보라 → 중간 파랑) — 쓰는 곳을 안 바꾸려고 */
+  --hps-ai-rose: #7FA6FF;   /* 옅은 파랑 */
+  --hps-ai-gradient: linear-gradient(90deg, var(--hps-ai-blue) 0%, var(--hps-ai-violet) 55%, var(--hps-ai-rose) 100%);
+  --hps-ai-gradient-soft: linear-gradient(135deg, rgb(36 105 255 / 0.07) 0%, rgb(127 166 255 / 0.05) 100%);
+
+  /* ── Text ──────────────────────────────────────────────────────── */
+  --hps-text-primary: #191F28;   /* 제목/강조 (가장 진함) */
+  --hps-text-body: #4E5968;      /* 본문 진한 회색 */
+  --hps-text-muted: #6B7684;     /* 중간 회색 */
+  /* 보조 — 2026-09-28 #8B95A1(흰 3.04)에서 -muted 와 같은 값으로 합쳤다(흰 4.62).
+     글자로 1,000곳 가까이 쓰이는데 11~13px 글자가 기준 4.5 에 한참 못 미쳤다. 흰 면에서 4.5 를
+     넘는 가장 옅은 회색이 곧 -muted 라, 그 사이에 따로 둘 값이 없다 — 포탈이 9-18 에 같은 이유로
+     같은 결론을 냈다. 회색 층은 이제 색이 아니라 크기·굵기가 나눈다. 글자가 아닌 자리(입력 안내 ·
+     비활성 · 테두리 · 도형)는 옛 값을 --hps-text-faint 로 옮겨 모양을 지켰다. */
+  --hps-text-secondary: #6B7684;
+  --hps-text-tertiary: #B0B8C1;  /* 가장 옅음 */
+
+  /* 옛 보조 회색 #8B95A1 — **읽지 않아도 되는 자리 전용** (2026-09-28).
+     입력 안내 글자(::placeholder) · 비활성(:disabled) · 테두리 · 차트의 회색 조각처럼 글자 대비 기준이
+     걸리지 않거나 일부러 옅어야 하는 곳. 읽어야 하는 글자에 쓰지 않는다 — 그건 -secondary/-muted. */
+  --hps-text-faint: #8B95A1;
+
+  /* 입력 안내 글자(::placeholder) 전용. 값은 --hps-text-tertiary 와 같지만
+     역할이 다르다 — 안내 글자는 '비어 있음'이 보여야 해서 일부러 옅다.
+     읽어야 하는 글자의 대비를 올릴 때 이것까지 같이 올리면 안내 글자가
+     입력값처럼 보인다. 그래서 토큰을 갈라 둔다 (2026-09-18). */
+  --hps-text-placeholder: #B0B8C1;
+
+  /* 포탈 스코프의 회색 사다리 (2026-09-18).
+     오피스 값(-secondary 3.04 · -tertiary 2.01, 흰 바탕 기준)은 WCAG AA
+     4.5:1 에 한참 못 미친다. 흰 바탕에서 AA 를 지키면서 만들 수 있는 회색은
+     네 단계뿐이라(primary 15.0 · body 6.5 · 아래 둘) -secondary 는 -muted 로
+     합친다. 색상은 211~216° 로 기존 계열 안에 있다.
+     오피스 화면에는 쓰지 않는다 — src/app/portal/portal.css 의 .portalRoot
+     가 포탈 안에서만 --hps-text-* 자리에 끼워 넣는다. */
+  --hps-portal-text-muted: #5B6570;    /* 5.38 페이지 / 5.68 상자 / 5.93 카드 */
+  --hps-portal-text-tertiary: #686F78; /* 4.61 / 4.86 / 5.08 */
+  /* 색이 채워진 면(파랑·빨강·초록 버튼, 뱃지) 위에 얹는 글자.
+     --hps-card-bg 와 지금은 같은 흰색이지만 역할이 반대다 —
+     다크 테마에서 카드 배경은 어두워지고 이 글자는 흰색으로 남는다. */
+  --hps-text-on-accent: #FFFFFF;
+  /* 잉크 면(--hps-text-primary 를 바탕으로 깐 토스트 · 툴팁 · 오늘 날짜) 위 글자 (2026-11-23).
+     -on-accent 와 지금은 같은 흰색이지만 다크에서 갈린다 — 잉크 면은 밝아지므로 이 글자는 어두워져야 한다. */
+  --hps-text-inverse: #FFFFFF;
+
+  /* ── Border (4단계) ────────────────────────────────────────────── */
+  --hps-border: #E5E8EB;          /* 기본 (구 #E6E7EB · #E5E7EB 수렴 대상) */
+  --hps-border-subtle: #F2F4F6;   /* 옅은 구분선/divider */
+  --hps-border-hover: #D1D6DB;    /* 강조/hover */
+  /* 서식 문서의 표 테두리 — 전자결재 결재문·계약서처럼 인쇄를 전제로 한 표.
+     UI 선(--hps-border)보다 훨씬 진하다. 화면 구획에는 쓰지 않는다. */
+  --hps-border-strong: #333333;
+
+  /* ── Status (semantic) ─────────────────────────────────────────────
+     상태색은 역할로 나뉜다. 채움색을 글자에 그대로 쓰면 흰 배경에서 흐려
+     읽히지 않기 때문에(예: #22C55E 는 2.2:1) text 단계를 따로 둔다.
+       fill   버튼·점 채움 (흰 글자가 얹힘)
+       hover  fill 의 hover
+       text   글자·아이콘 — **흰 배경과 subtle 배경 둘 다**, 각 배경 위 4.5:1
+       border subtle 배경 위 테두리
+       subtle 알림/뱃지 배경
+
+     **text 는 흰 배경만의 값이 아니다 (2026-09-18 정정).** --color-teal-text 와
+     --color-purple-text 는 주석에 "subtle 위" 라고 용도가 적혀 있다. 즉 이 단계는
+     **옅은 면 위에서도 읽히는 값**이다. fill 을 글자로 돌려 쓰면 흰 배경에서는
+     통과해도 옅은 면 위에서 미달이 된다 — <Badge> 7톤 중 통과하는 셋
+     (success·teal·purple)이 정확히 -text 를 쓰는 셋이었다.
+     **대비는 잴 배경을 먼저 정하고 잰다.** (DESIGN_SYSTEM.md §2.1 과 같은 표다)
+
+     **다섯 역할을 다 갖춘 색은 없다** — teal 3 · danger 4 · success 5 · purple 5 ·
+     warning 6 단계로 제각각이고, 위 다섯 밖의 이름도 있다(--color-warning-on 은
+     채움 위 흰 글자, --color-purple-light 는 글자가 안 얹히는 게이지·아이콘 채움).
+     자리가 생길 때 만든다. **없는 단계를 옆 단계로 대신 쓰면 이름과 쓰임이 어긋나는데,
+     danger 가 지금 그 상태다** — -text 를 합쳐 없앤 뒤라 옅은 면 위 글자에
+     --color-danger-hover(#CC1123, 연빨강 위 5.02)를 쓰고 있다. 값은 맞지만 이름이
+     hover 다. 되살릴지 그대로 둘지는 아직 안 정했다 (아래 정정 기록 참고).
+     success 는 HDS 그린 팔레트 기준 (2026-09) — fill 은 3↔2단계 사이에서
+     흰 글자 대비 4.5:1 을 넘기는 지점을 잡았다. */
+  --color-success: #018944;          /* fill   4.50:1 */
+  --color-success-hover: #05723C;    /* hover  6.04:1 */
+  --color-success-text: #095633;     /* text   8.78:1 — HDS 2단계 */
+  --color-success-border: #8EFBB8;   /* border         HDS 7단계 */
+  --color-success-subtle: #E2FFE9;   /* subtle         HDS 10단계 */
+  --color-success-faint: #F8FFFA;    /* faint          subtle 을 흰색에 1/4 만 섞은 값 — 넓은 면 바탕(달력 칸 등)에 subtle 이 짙을 때 (2026-10-14 신설) */
+  --color-success-fill: var(--color-success);             /* 채움 전용 — 흰 글자가 얹히는 면. 위 --hps-blue-fill 주석 참고 */
+  --color-success-fill-hover: var(--color-success-hover);
+
+  /* danger — hue 354° / 채도 85% 로 전 단계 정렬.
+     fill 은 흰 글자가 얹히므로 4.5:1 을 넘긴다 (구 #F04452 는 3.71:1 로 미달이었다).
+
+     **--color-danger-text 를 여기로 합쳤다 (2026-09-18).** 둘은 #EB1329(L50) 과
+     #DE1226(L47) 로 명도 3%p 차이였고 서로의 대비가 1.10 이라 눈으로 구분되지 않았다.
+     이름은 "fill / text" 로 갈라 놓았지만 실제로는 --color-danger 164곳 중 118곳(72%)이
+     이미 color: 로 쓰이고 있어 **구분이 지켜지지 않았다.** 262곳을 이 토큰으로 모았다.
+
+     **대비는 바탕을 따진다.** 아래는 실측값이다:
+       흰 카드 #FFFFFF        4.51  ✅
+       페이지 바탕 #F2F4F6    4.09  ❌
+       옅은 회색 #F9FAFB      4.31  ❌
+       연빨강 #FEECEE         3.96  ❌
+     본문 글자로 쓸 때는 흰 바탕을 전제한다. 회색 면 위에서는 큰 글자(3:1)나
+     아이콘으로 쓰고, 작은 글자가 필요하면 그 자리만 한 단계 진하게 쓴다.
+
+     **위 병합에 사실 오류가 둘 있었다 (2026-09-18 정정).**
+     (1) "success 계열에는 -text 가 아예 없다" 고 적었는데 --color-success-text(#095633)
+         는 있다. -text 는 danger 만의 예외가 아니라 success·teal·purple 이 공유하는
+         단계이고, 그 셋의 주석이 "subtle 위" 라고 용도까지 적어 두고 있었다.
+     (2) 대비를 흰 면에서만 재고 옅은 면에서 다시 재지 않았다. 그래서 이 병합은
+         <Badge tone="danger"> 를 4.37 → 3.96 으로 내렸다.
+     둘 다 **"무엇 위에서 재는가" 를 안 정하고 센 것**이 원인이다. 병합 자체는 되돌리지
+     않되(72% 가 이미 글자였던 건 사실이다), 옅은 면 위 글자는 --color-danger-hover 로
+     내려 쓴다 — <Button variant="dangerSoft"> 와 <Badge tone="danger"> 가 그렇다. */
+  --color-danger: #EB1329;           /* 4.51:1 — 흰 바탕 기준 */
+  --color-danger-hover: #CC1123;     /* hover  5.72:1 */
+  --color-danger-border: #FECACA;    /* border */
+  --color-danger-subtle: #FEECEE;    /* subtle */
+  --color-danger-fill: var(--color-danger);               /* 채움 전용 — 흰 글자가 얹히는 면. 위 --hps-blue-fill 주석 참고 */
+  --color-danger-fill-hover: var(--color-danger-hover);
+
+  /* warning — 주황 계열.
+     2026-09: 채움 위 글자를 다른 상태와 같은 흰 글자로 통일했다.
+     밝은 노랑(#F57F17)에 흰 글자는 2.9:1 이라 못 얹는다 — 그래서 채움을 앰버 700 단계까지
+     내려 흰 글자 5.05:1 을 확보했다. 색상(hue 32°)은 그대로라 여전히 주황으로 읽힌다.
+     채움은 글자 없는 점·게이지에도 쓰이는데, 그쪽은 조금 진해질 뿐 뜻이 바뀌지 않는다.
+     글자색(-text)은 채움과 계열이 다르다 — 노랑을 흰 배경 위 글자로 쓰면 2.65:1 로 읽히지 않고,
+     노랑 색상을 유지한 채 4.5:1 까지 어둡게 하면 반드시 머스터드·올리브가 된다(#986600 시도했다가 폐기).
+     그래서 글자는 주황(hue 26°)으로 뺀다.
+
+     ⚠ -text 는 이 파일에서 유일하게 대비 기준(4.5:1)을 의도적으로 비켜간 값이다.
+        흰 배경 3.42:1 / 뱃지 배경 3.18:1 로, 선명한 주황을 택한 결과다.
+        4.5:1 을 지키려면 #BB5100(4.56:1) 이 같은 색상에서의 최대 밝기다.
+        주로 12px 뱃지 글자와 라벨에 쓰이므로 노안·야외에서 흐려질 수 있다 —
+        이 값을 다시 손볼 때 참고. */
+  --color-warning: #B45309;          /* fill   흰 글자 5.05:1 (구 #F57F17 은 흰 글자 2.9:1) */
+  --color-warning-hover: #96430A;    /* hover  흰 글자 6.70:1 */
+  --color-warning-on: var(--hps-text-on-accent); /* 채움 위에 얹는 글자 — 흰색 */
+  /* 신호등(빨강·노랑·초록) — 주간업무 보고서 KPI 상태 점 (2026-10-07). 점·테두리 전용, 글자색으로 쓰지 않는다 */
+  --hps-signal-red: var(--color-danger);
+  --hps-signal-yellow: #F2B705;
+  --hps-signal-green: var(--color-success);
+  --color-warning-text: #E66300;     /* text   흰 배경 3.42:1 · subtle 3.18:1 — 위 ⚠ 참고 */
+  --color-warning-text-strong: #7A5300; /* text   subtle 배경 위 본문·뱃지 글자 7.0:1 (작은 글자용) */
+  --color-warning-border: #FDE68A;   /* border */
+  --color-warning-subtle: #FFF6E5;   /* subtle */
+  --color-pending: var(--color-warning);
+
+  --color-info: var(--hps-blue);
+  --color-info-subtle: var(--hps-blue-subtle);
+
+  /* 중립 — 「미배정」「부재중」「기타」처럼 조용해야 하는 상태의 글자 (2026-09-23 신설).
+     바탕은 따로 두지 않고 페이지 바탕(--hps-bg)을 쓴다.
+     --hps-text-muted(#6B7684)를 회색 면 위에 얹으면 4.19 로 미달이고, --hps-text-body 는
+     6.45 로 반려·보류만큼 무거워진다. 그 사이에서 **4.5 를 넘는 가장 옅은 지점**을 잡았다 —
+     muted 에서 body 쪽으로 20% (--hps-bg 위 4.57 · 흰 위 5.03).
+     9-22 에 한 번 「흰 바탕 + 테두리」로 풀었는데, 12종이 나란히 서면 회색 둘만 혼자
+     테두리라 튀어서 되돌렸다. 미리보기에서 네 안을 나란히 놓고 골랐다. */
+  --color-neutral-text: #65707E;
+
+  /* 청록 — success·danger·warning·info 네 상태로 표현되지 않는 중립 강조.
+     현재 쓰임: 업무요청 우선순위 '보통'. 파랑(진행중)·초록(완료)과 뜻이 겹치지 않으면서
+     회색보다 한 칸 위 존재감이 필요한 자리에 쓴다. */
+  --color-teal: #0E7490;             /* fill·점  흰 글자 5.36:1 */
+  --color-teal-text: #047183;        /* text     subtle 위 5.10:1 */
+  --color-teal-subtle: #E0F7FA;      /* 배경 */
+
+  /* 보라 — 상태가 아니라 '갈래'를 가르는 색. 화면 곳곳에서 이미 쓰고 있었다:
+     문의 DB 장기가망 · 실습 취업추진중 · 올케어 패키지 · 결재선 인사 분류 ·
+     업무일지 로그 종류 · 구법 실습기관 · 자격증 추천 코드.
+     teal 로 몰았더니 뜻이 다른 것끼리 같은 색이 돼서 톤으로 승격했다 (2026-09). */
+  --color-purple: #6D28D9;           /* fill·점  흰 글자 7.10:1 */
+  --color-purple-text: #6D28D9;      /* text     subtle 위 6.02:1 */
+  --color-purple-light: #9E70E6;     /* 게이지·아이콘 채움 — 글자 안 얹히는 자리 */
+  --color-purple-border: #D0BAF3;    /* border   subtle 배경 위 테두리 */
+  --color-purple-subtle: #F3E8FF;    /* 배경 */
+
+  /* 자홍 — 2026-09-21 신설. 늘린 이유는 하나다: 캘린더의 「팀」과
+     「업셀링 캠페인」이 둘 다 --color-purple 이라 거리 0, 같은 색이었다.
+     범례 점 두 개가 구분이 안 됐다.
+
+     둘 중 「팀」을 옮겼다. 처음엔 업셀링을 옮겼다가 되돌렸다 — 업셀링은
+     이 달력 밖에서도 보라다(업무일지 두 목록의 <Badge tone="purple">,
+     MemoTimeline 이 "배지 purple 톤과 같은 색"이라고 적어 둔 메모 태그).
+     팀이 보라인 곳은 이 캘린더 파일 하나뿐이라 옮기는 값이 쌌다.
+
+     팔레트를 훑었지만 쓸 계열이 없었다 —
+     초록 개인 · 파랑 회사 · 연파랑 연반차 · 보라 팀 · 주황 인사고과 ·
+     청록 학사일정, 빨강은 오류 전용, purple-light 는 "글자 안 얹히는
+     자리"로 용도가 박혀 있다. 그래서 색상환에서 기존 색과 가장 멀리
+     떨어지는 자리를 1도씩 훑어 골랐다(hue 318 — 보라와 112, 빨강과 108).
+     값은 보라의 대비 프로필에 맞췄다: 보라 흰 7.10 / subtle 6.02.
+     fill 과 text 를 한 값으로 두는 것도 보라와 같다 — 밝기만 다른 두
+     토큰은 2026-09-18 danger 병합에서 이미 한 번 걷어낸 갈래다. */
+  --color-magenta: #A01877;          /* fill·점·text  흰 글자 7.26:1 · subtle 위 6.28:1 */
+  --color-magenta-border: #EEB5DC;   /* border   subtle 배경 위 테두리 */
+  --color-magenta-subtle: #FFE8F8;   /* 배경 */
+  --hps-red: var(--color-danger);   /* 에러/위험 텍스트 (--hps- 네임스페이스 별칭) */
+
+  /* 휴가 전용 색은 없다 (2026-09-23 걷어 냄 — --hps-leave #0084FE · --hps-halfday #00C471 과 두 -subtle).
+     휴가는 퇴근과 같은 「일을 맡길 수 없음」이라 회색이다: 점·범례는 --hps-text-muted,
+     칩은 <Badge tone="neutral"> 값(--hps-bg + --color-neutral-text). 종류(연차·반차·병가…)는 글자로 읽는다.
+     하늘색이던 때는 브랜드 파랑과 두 갈래로 갈려 있었고, 캘린더에서 「회사」 칩과 거의 같은 색이었다. */
+
+  /* 카카오 — 상태가 아니라 브랜드 식별색이라 톤(warning)에 넣지 않는다.
+     유학 회원 목록의 가입방식 칸에서만 쓴다. 옆 칸 Google 은 브랜드 빨강이
+     마침 danger 토큰과 같은 값이라 톤으로 간다. */
+  --hps-kakao-subtle: #FFF8C5;                 /* 배경 */
+  --hps-kakao-text: #7B5A00;                   /* 글자 — subtle 위 7.4:1 */
+  /* 콘텐츠 스튜디오 「카톡 양식」 그림 — 카톡 대화방 모양(내 말풍선 노랑 · 대화방 바탕). 그림 속 색이라 화면 테마와 상관없다 (2026-11-03) */
+  --hps-kakao-bubble: #FEE500;
+  --hps-kakao-chat-bg: #B2C7D9;
+  --hps-kakao-profile: #A9B8E8;                /* 카톡 기본 프로필 바탕(사진 없을 때) */
+
+  /* 검색어 강조 — 상태가 아니라 형광펜이다. 상태색 넷(파랑·초록·주황·빨강)과
+     겹치지 않아야 "여기가 검색어"로 읽힌다. warning(주황)으로 대신하면
+     같은 표에서 주의 상태와 헷갈린다. */
+  --hps-highlight: #FFF3A3;                    /* 검색어 배경 — 검정 글자 14.7:1 */
+  --hps-highlight-subtle: #FFF9DB;             /* 행 전체 강조처럼 넓은 면 */
+
+  /* 실습기관 찾기 고유 네이비 — 이 화면의 강조색이라 파랑 스케일에 넣지 않는다.
+     파일 안에서 --navy 로컬 변수로 쓰던 값을 여기로 옮긴 것뿐, 값은 그대로다. */
+  --hps-navy: #00287F;
+  --hps-navy-hover: #00184D;
+  /* 네이비를 글자 · 선으로 쓸 때 (2026-11-23). 채움(--hps-navy)은 다크에서도 그대로라 글자로 쓰면 바탕에 묻힌다(1.29) */
+  --hps-navy-text: #00287F;
+
+  /* 표의 합계 행·주간보고 헤더 — 흰 글자가 얹히는 어두운 구획 표시.
+     상태색이 아니라서 text-primary(거의 검정)로 대신하면 뜻이 달라진다. */
+  --hps-table-total-bg: #1E3A5F;
+
+  /* ── Radius (size scale) ───────────────────────────────────────── */
+  --hps-radius-xs: 4px;       /* 칩·작은 태그 */
+  --hps-radius-sm: 6px;       /* 뱃지 */
+  --hps-radius-md: 8px;       /* ⭐기본: 버튼·인풋·카드 */
+  --hps-radius-lg: 12px;      /* 큰 카드·모달 */
+  --hps-radius-xl: 16px;      /* 특대 컨테이너 — 마케팅 큰 카드·모달(구 18·20·24)도 여기로 */
+  --hps-radius-full: 9999px;  /* pill (풀라운드) */
+  /* 원형은 border-radius:50% 직접 사용 (shape, 토큰 아님) */
+  /* semantic alias → size */
+  --hps-radius-badge: var(--hps-radius-sm);
+  --hps-radius-input: var(--hps-radius-md);
+  --hps-radius-button: var(--hps-radius-md);
+  /* 카드 표준 radius — 모든 카드의 단일 제어점.
+     이 값만 바꾸면 <Card> 및 .card 컨테이너 전부 반영된다. */
+  --hps-radius-card: var(--hps-radius-lg);
+
+  /* ── Shadow (elevation, 정본) ──────────────────────────────────────
+     오프셋은 0 0 — 빛을 위에서 비추는 게 아니라 요소가 제자리에서 뜬다.
+     한쪽으로 치우치지 않으니 같은 토큰이 화면 어디에 놓여도 같게 보인다.
+     오프셋이 없으면 번짐의 절반이 요소 뒤에 가리므로, 값은 '보이는 테'가 아니라
+     '번지는 반지름'으로 읽어야 한다 (24px 번짐 → 사방 12px 남짓).
+     card 의 진하기가 .1 인 것도 그래서다 — 1px 내려앉아 있던 걸 가운데로 올리면
+     보이는 양이 반으로 줄어, 번짐이 아니라 진하기로 되찾는다. */
+  --hps-shadow-card: 0 0 3px rgba(0, 0, 0, 0.1);
+  --hps-shadow-dropdown: 0 0 12px rgba(0, 0, 0, 0.1), 0 0 4px rgba(0, 0, 0, 0.06);
+  --hps-shadow-modal: 0 0 24px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.06);
+  /* 드로어만 방향을 지킨다 — 왼쪽으로만 던져야 '오른쪽에서 밀고 들어왔다'가 읽힌다.
+     오른쪽 그림자는 어차피 화면 밖으로 잘려 낭비다. */
+  --hps-shadow-drawer: -10px 0 36px rgba(16, 22, 40, 0.14);
+  --hps-shadow-primary: 0 0 12px rgba(36, 105, 255, 0.4);    /* 파랑 버튼 글로우 */
+  --hps-focus-ring: 0 0 0 3px rgba(36, 105, 255, 0.12);
+
+  /* ── Scrim (모달 뒤 막) ────────────────────────────────────────────
+     토큰이 없어서 60개 파일이 저마다 손으로 그렸다 — 72곳에 23종.
+     알파 0.32~0.55 사이에 흩어져 있었는데 역할은 전부 같았다.
+     값은 --hps-text-primary(#191F28) 를 44% 로 깐 것이다. 팔레트 밖에서
+     가져오지 않고 우리 잉크를 쓰면 "막은 이 페이지의 글자색을 옅게 깐 것"으로
+     설명된다 — 가장 많던 두 값(0.4·0.45) 사이에 그대로 앉는다.
+     이미지 뷰어(0.88·0.72)·팝오버 막(0.2~0.25)·가이드 틴트(0.08)는 역할이 달라
+     합치지 않았다. 어둡고 반투명하다고 다 같은 막이 아니다. */
+  --hps-scrim: rgb(var(--hps-ink-rgb) / 44%);
+  /* 사진·예시를 크게 띄우는 막. 뒤가 비치면 안 돼서 모달 막보다 진하다 —
+     66·70·72% 로 흩어져 있던 세 곳을 70% 로 모았다(2026-09-14). */
+  --hps-scrim-strong: rgb(var(--hps-ink-rgb) / 70%);
+
+  /* ── Z-index (겹침 층) — 2026-09-28 ─────────────────────────────────
+     58가지 값이 역할과 상관없이 흩어져 있었다 — 모달 막만 45~9999 사이 13가지,
+     토스트 8가지. 그래서 막이 낮은 모달 위로 AI 버튼이 뜨고, 토스트가 모달 밑에 깔렸다.
+     0~9 는 한 컴포넌트 안의 겹침이라 숫자로 쓴다. 10 이상은 이 토큰만(게이트가 막는다).
+     짝지어 겹치는 것(막 위의 서랍, 가이드의 여러 겹)은 calc(토큰 ± n) 으로 순서를 지킨다. */
+  --hps-z-sticky: 10;          /* 스크롤 칸에 붙는 표 머리·바닥 줄 */
+  --hps-z-popover: 100;        /* 화면 안 드롭다운·팝오버·툴팁 (absolute) */
+  --hps-z-shell: 200;          /* 앱 틀 — 모바일 사이드바·서랍, AI 버튼·패널 */
+  --hps-z-modal: 1000;         /* 모달·서랍과 그 막 */
+  --hps-z-modal-nested: 1100;  /* 모달 위에 여는 모달 — 이미지 크게 보기, 양식 고르기 */
+  --hps-z-overlay: 9000;       /* 앱 전체를 덮는 창 — 가이드, 알림 센터, 업무요청 상세, 빠른 검색 */
+  --hps-z-portal: 9999;        /* body 에 뜨는 판 — Select·Menu·DateInput·Combobox, fixed 드롭다운 */
+  --hps-z-toast: 10000;        /* 토스트는 늘 맨 위 */
+
+  /* ── 채널 토큰 (반투명용) ──────────────────────────────────────────
+     위 토큰들은 전부 불투명 hex 라 `rgba(36,105,255,.1)` 같은 값을 담을 수
+     없었다. 그래서 옅은 파랑 틴트 · 그라디언트 위 흰 막 · 중성 음영이
+     전부 손으로 쓴 리터럴로 남아 있었다 — 파랑이 바뀌어도 따라오지 않는다.
+
+     채널만 담아 두면 알파를 자유롭게 얹으면서 팔레트를 계속 따라간다:
+
+         background: rgb(var(--hps-blue-rgb) / 10%);
+
+     알파가 필요 없으면 쓰지 마라. 불투명 자리는 `var(--hps-blue)` 가 정본이고,
+     이 토큰들은 **반투명일 때만** 꺼낸다 (같은 색을 두 갈래로 쓰면 어긋난다).
+     white/black 은 팔레트 색이 아니라 합성 재료다 — 흰 막은 `--hps-card-bg`
+     가 아니라 '흰색'을 원하고, 음영은 우리 잉크(#191F28)가 아니라 중성 검정을
+     원한다. 그래서 이름도 의미가 아니라 재료로 붙였다. */
+  --hps-white-rgb: 255 255 255;  /* 컬러·그라디언트 서피스 위 흰 막·흰 글자 */
+  --hps-black-rgb: 0 0 0;        /* 중성 음영 — 얇은 테·옅은 hover·진한 막 */
+  --hps-ink-rgb: 25 31 40;       /* --hps-text-primary. 막·사진 위 버튼의 바탕 */
+  --hps-blue-rgb: 36 105 255;    /* --hps-blue */
+  /* 아래 "한두 곳뿐이면 만들지 마라" 의 예외 — 위촉계약서 표 머리 한 곳뿐이지만
+     그 화면은 html2canvas 로 PDF 를 뜬다. html2canvas 1.4.1 의 파서가 아는 색 함수는
+     rgb·rgba·hsl·hsla 넷뿐이라(SUPPORTED_COLOR_FUNCTIONS), color-mix 를 쓰면
+     계산값 `color(srgb …)` 에서 **던지고 PDF 생성이 통째로 실패한다.**
+     그래서 섞는 대신 채널로 얹는다. 배너 남색과 한 벌이라 리터럴로 굳히지도 않았다. */
+  --hps-navy-rgb: 0 40 127;      /* --hps-navy */
+
+  /* 채널 토큰은 **여러 곳에서 여러 알파로** 쓰는 색에만 만든다.
+     한두 곳뿐이면 토큰을 늘리지 말고 팔레트 토큰을 그 자리에서 섞어라 —
+     그게 "빨강 12%" 가 아니라 "위험색 12%" 로 읽혀서 의미도 더 정확하다:
+
+         background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+
+     한 번 쓰는 색에 토큰을 만들면 롱테일이 없어지는 게 아니라 토큰 쪽으로 옮겨 심는 셈이다. */
+
+  /* ── Layout / Control ──────────────────────────────────────────── */
+  --hps-nav-height: 56px;
+  --hps-sidebar-width: 190px;
+  /* xs 는 아이콘 전용이다 — 글자 버튼은 sm(32px)이 최소다.
+     표 행·툴바에 얹히는 아이콘 버튼이 26~30px 에 55곳 몰려 있었는데
+     공용 <Button> 의 최소가 32px 이라 만들 수가 없어서 전부 로컬 CSS 로 샜다. */
+  --control-height-xs: 28px;
+  --control-height-sm: 32px;
+  --control-height: 36px;      /* 버튼/인풋/셀렉트 공통 높이 (폼 정렬 기준) */
+  --control-height-lg: 44px;
+
+  /* ── Typography ────────────────────────────────────────────────── */
+  --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Fira Mono', monospace;
+
+  /* type scale (실사용 13px 베이스) */
+  --hps-text-xs: 11px;      /* 캡션·보조 */
+  --hps-text-sm: 12px;      /* 작은 본문·라벨 */
+  --hps-text-base: 13px;    /* ⭐기본 본문 */
+  --hps-text-md: 14px;      /* 강조 본문 */
+  --hps-text-lg: 16px;      /* 소제목 */
+  --hps-text-xl: 18px;      /* 제목 */
+  --hps-text-2xl: 20px;     /* 큰 제목 */
+  --hps-text-3xl: 24px;     /* 섹션 헤드 */
+  --hps-text-4xl: 32px;     /* 히어로·숫자 강조 */
+
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+
+  /* ── Transition ────────────────────────────────────────────────── */
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 100ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+
+  /* ── Container ─────────────────────────────────────────────────── */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --page-max: 1200px;          /* 콘텐츠 최대 폭 */
+
+  /* ── Spacing (px scale, 실사용 기반) ───────────────────────────── */
+  --hps-space-1: 1px;   /* 광학 보정 전용 — 아이콘·숫자를 글자 기준선에 맞출 때만 */
+  --hps-space-2: 2px;
+  --hps-space-4: 4px;
+  --hps-space-6: 6px;
+  --hps-space-8: 8px;
+  --hps-space-10: 10px;
+  --hps-space-12: 12px;
+  --hps-space-14: 14px;
+  --hps-space-16: 16px;
+  --hps-space-20: 20px;
+  --hps-space-24: 24px;
+  --hps-space-32: 32px;
+  --hps-space-40: 40px;
+  --hps-space-48: 48px;
+  /* 화면 틀(main)의 좌우 안쪽 여백 — 틀 · 헤더 · 틀 여백을 상쇄하는 곳이 같이 쓴다 (2026-10-07, 24 → 32).
+     640px 이하는 이 파일 맨 아래에서 12 로 낮춘다 */
+  --hps-page-gutter: 32px;
+
+  /* ==========================================================================
+     BRIDGE ALIASES — 레거시 호환 (신규 코드에서 사용 금지)
+     아래 토큰들은 위 정본 값과 동일하게 정렬되어 있다.
+     ========================================================================== */
+
+  /* --color-* → 정본 매핑 */
+  --color-primary: var(--hps-blue);
+  --color-primary-hover: var(--hps-blue-hover);
+  --color-primary-subtle: var(--hps-blue-subtle);
+  --color-bg: var(--hps-card-bg);
+  --color-bg-subtle: #F9FAFB;
+  --color-bg-muted: var(--hps-bg);
+  --color-surface: var(--hps-card-bg);
+  --color-border: var(--hps-border);
+  --color-border-subtle: var(--hps-border-subtle);
+  --color-text: var(--hps-text-primary);
+  --color-text-subtle: var(--hps-text-secondary);
+  --color-text-muted: var(--hps-text-tertiary);
+  --color-text-inverse: #FFFFFF;
+
+  /* --radius-* → px 정본 (값 동일, 렌더 변화 없음) */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* --space-* → px (4pt 그리드) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* --text-* → px (기존 스케일 값 동일, rem→px 변환으로 렌더 변화 없음) */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+  --text-4xl: 36px;
+
+  /* --shadow-* → 정본 elevation 별칭 */
+  --shadow-sm: var(--hps-shadow-card);
+  --shadow-md: var(--hps-shadow-dropdown);
+  --shadow-lg: var(--hps-shadow-modal);
+  --shadow-xl: var(--hps-shadow-modal);
+}
+
+/* ============================================================================
+   다크 테마 (2026-11-23)
+   html 또는 어느 요소에 data-theme="dark" 가 붙었을 때만 적용된다. 머리줄의 <ThemeToggle> 이 켜고 끄며
+   (src/lib/theme.ts — 이 브라우저에 저장, 기본은 라이트), /preview/dark-mode 는 칸 하나에 속성을 달아 나란히 보여 준다.
+   기기 설정(prefers-color-scheme)은 따라가지 않는다 — bridge --color-* 13개만 덮던 옛 블록은 걷어 냈다.
+   파랑 · 빨강 · 초록은 둘로 나뉜다: 글자 · 테두리 · 점 · 막대(--hps-blue 류)는 밝히고,
+   흰 글자가 얹히는 채움(-fill)은 라이트 값 그대로 둔다.
+   끝의 별칭 묶음은 html 이 아닌 요소(미리보기 칸)에 속성을 달 때를 위한 것이다 — var() 는 정의된
+   자리에서 값으로 굳어 내려오므로, 안쪽 요소에서 덮으려면 별칭도 그 자리에서 다시 적어야 한다.
+   ============================================================================ */
+/* 인쇄할 때는 다크를 적용하지 않는다 — window.print() 로 뽑는 문서(인사고과 · 계약서)가 검게 나오지 않게 화면에서만 */
+@media screen {
+  :root[data-theme="dark"],
+  [data-theme="dark"] {
+    color-scheme: dark;
+
+    /* 바탕 — 페이지가 가장 어둡고 카드가 한 단계 뜬다 */
+    --hps-bg: #101216;
+    --hps-card-bg: #1A1D23;
+    --hps-bg-subtle: #20242B;
+    --hps-table-head-bg: #20242B;
+    --hps-surface-tint: #1D2026;
+    --hps-blue-tint: #161D2B;
+    --hps-blue-tint-deep: #18233A;
+    --hps-blue-tint-deep-rgb: 24 35 58;
+    --hps-hover-bg: rgb(var(--hps-white-rgb) / 6%);
+    --hps-fill: #2A2F38;
+    --hps-fill-hover: #353B45;
+
+    /* 글자 */
+    --hps-text-primary: #F2F4F6;
+    --hps-text-body: #C5CCD5;
+    --hps-text-muted: #9AA4B1;
+    --hps-text-secondary: #9AA4B1;
+    --hps-text-faint: #7A8492;
+    --hps-text-tertiary: #7A8492;  /* 2.99 → 4.46 (2026-11-23). 묶음 이름표 · 빈 값 표시에도 쓰여 읽혀야 한다. 입력 안내(-placeholder)는 옅은 채로 둔다 */
+    --hps-text-placeholder: #5F6875;
+    --hps-text-on-accent: #FFFFFF;
+    --hps-text-inverse: #101216;
+    --hps-navy-text: #8FB0E8;
+
+    /* 선 */
+    --hps-border: #2E333B;
+    --hps-border-subtle: #24282F;
+    --hps-border-hover: #454C57;
+    --hps-border-strong: #C9CED6;
+
+    /* 파랑 — 글자 · 테두리 · 점 · 막대 */
+    --hps-blue: #5290FF;
+    --hps-blue-hover: #76A6FF;
+    --hps-blue-rgb: 82 144 255;
+    --hps-blue-subtle: #152645;
+    --hps-blue-subtle-hover: #1B3158;
+    --hps-blue-border: #2A4A85;
+    --hps-blue-border-hover: #3A62AD;
+
+    /* 채움 — 흰 글자가 얹히는 면. 라이트 값 그대로 둔다 */
+    --hps-blue-fill: #2469FF;
+    --hps-blue-fill-hover: #0051FF;
+    --color-success-fill: #018944;
+    --color-success-fill-hover: #05723C;
+    --color-danger-fill: #EB1329;
+    --color-danger-fill-hover: #CC1123;
+
+    /* 상태 */
+    --color-success: #2EBD6B;
+    --color-success-hover: #4CCB82;
+    --color-success-text: #5FD68F;
+    --color-success-border: #1F5C3A;
+    --color-success-subtle: #14331F;
+    --color-success-faint: #0E1F17;
+
+    --color-danger: #FF5A66;
+    --color-danger-hover: #FF8089;
+    --color-danger-border: #6B2229;
+    --color-danger-subtle: #451A1F;
+
+    --color-warning: #B45309;
+    --color-warning-hover: #CC6410;
+    --color-warning-text: #FF9A3D;
+    --color-warning-text-strong: #FFC56B;
+    --color-warning-border: #5C4313;
+    --color-warning-subtle: #3D2A0E;
+
+    --color-neutral-text: #A3ADB9;
+
+    --color-teal-text: #4FD1E0;
+    --color-teal-subtle: #123A42;
+
+    --color-purple: #7C3AED;
+    --color-purple-text: #B79CFF;
+    --color-purple-border: #4A3585;
+    --color-purple-subtle: #2E2054;
+
+    --color-magenta: #F28BD0;
+    --color-magenta-border: #6B2A58;
+    --color-magenta-subtle: #45193A;
+
+    --hps-kakao-subtle: #3A3200;
+    --hps-kakao-text: #F5D94A;
+    --hps-highlight: #5C4A00;
+    --hps-highlight-subtle: #332B08;
+
+    /* 그림자 · 막 — 어두운 면에서는 옅은 그림자가 안 보여 진하게 */
+    --hps-shadow-card: 0 0 3px rgb(var(--hps-black-rgb) / 45%);
+    --hps-shadow-dropdown: 0 0 12px rgb(var(--hps-black-rgb) / 50%), 0 0 4px rgb(var(--hps-black-rgb) / 35%);
+    --hps-shadow-modal: 0 0 24px rgb(var(--hps-black-rgb) / 55%), 0 0 6px rgb(var(--hps-black-rgb) / 35%);
+    --hps-focus-ring: 0 0 0 3px rgb(var(--hps-blue-rgb) / 30%);
+    --hps-scrim: rgb(var(--hps-black-rgb) / 60%);
+    --hps-scrim-strong: rgb(var(--hps-black-rgb) / 80%);
+
+    /* 포탈 — 사이드바 · 버튼의 남색 채움(-navy*)은 라이트 값 그대로 두고, 남색 글자 · 선(-accent*)만 옅은 파랑으로 */
+    --hps-portal-text-muted: #9AA4B1;
+    --hps-portal-text-tertiary: #8B95A1;
+    --hps-portal-ink: #F2F4F6;
+    --hps-portal-ink-2: #D5DAE1;
+    --hps-portal-body: #C5CCD5;
+    --hps-portal-gray: #9AA4B1;
+    --hps-portal-gray-faint: #7A8492;
+    --hps-portal-line: #2E333B;
+    --hps-portal-line-strong: #454C57;
+    --hps-portal-line-stronger: #515966;
+    --hps-portal-line-soft: #24282F;
+    --hps-portal-line-softer: #22262D;
+    --hps-portal-surface: #20242B;
+    --hps-portal-surface-tint: #1D2026;
+    --hps-portal-surface-cool: #1E2228;
+    --hps-portal-tint-blue: #161D2B;
+    --hps-portal-tint-blue-deep: #18233A;
+    --hps-portal-accent: #8FB0E8;
+    --hps-portal-accent-strong: #A9C3F0;
+    --hps-portal-accent-deep: #A9C3F0;
+    --hps-portal-navy-deep: #1D3560;
+    --hps-portal-blue: #6F9BDB;
+    --hps-portal-link: #5290FF;
+    --hps-portal-red: #FF6B6B;
+    --hps-portal-red-fill: #EF4444;
+    --hps-portal-red-strong: #FF8089;
+    --hps-portal-red-deep: #FF8089;
+    --hps-portal-red-line: #6B2229;
+    --hps-portal-red-subtle: #2E1518;
+    --hps-portal-green: #5FD68F;
+    --hps-portal-green-bright: #5FD68F;
+
+    /* 별칭 — 이 칸 안에서 다시 굳힌다 (파일 머리 주석) */
+    --hps-hover: var(--hps-hover-bg);
+    --hps-bg-hover: var(--hps-hover-bg);
+    --hps-green: var(--color-success);
+    --hps-green-hover: var(--color-success-hover);
+    --hps-green-subtle: var(--color-success-subtle);
+    --hps-red: var(--color-danger);
+    --hps-signal-red: var(--color-danger);
+    --hps-signal-green: var(--color-success);
+    --color-pending: var(--color-warning);
+    --color-info: var(--hps-blue);
+    --color-info-subtle: var(--hps-blue-subtle);
+    --color-primary: var(--hps-blue);
+    --color-primary-hover: var(--hps-blue-hover);
+    --color-primary-subtle: var(--hps-blue-subtle);
+    --color-bg: var(--hps-card-bg);
+    --color-bg-subtle: var(--hps-bg-subtle);
+    --color-bg-muted: var(--hps-bg);
+    --color-surface: var(--hps-card-bg);
+    --color-border: var(--hps-border);
+    --color-border-subtle: var(--hps-border-subtle);
+    --color-text: var(--hps-text-primary);
+    --color-text-subtle: var(--hps-text-secondary);
+    --color-text-muted: var(--hps-text-tertiary);
+    --color-text-inverse: var(--hps-bg);
+  }
+}
+
+/* 라이트 고정 구역의 글자색 — 토큰은 맨 위 블록이 다시 선언하지만, 글자색은 물려받은 계산값(다크의 밝은 글자)이라 여기서 다시 잡는다 */
+[data-theme="light"] {
+  color: var(--hps-text-primary);
+  color-scheme: light;
+}
+
+/* 좁은 화면의 화면 틀 좌우 여백 — layout.module.css 의 640px 규칙과 짝 */
+/* 12 → 20 (2026-10-13 사용자 결정 — 16 을 거쳐 20). 머리줄 · 홈 · 아래 붙는 페이지 줄도 이 값을 따른다 */
+@media (max-width: 640px) {
+  :root,
+  [data-theme="light"] {
+    --hps-page-gutter: 20px;
+  }
+}
+
+/* ── 모바일 파운데이션 (2026-10-13 사용자 결정, 미리보기 /preview/mobile-foundation) ──
+   좁은 화면에서도 글자 · 누르는 요소 높이가 PC 값 그대로라 작고 붙어 보였다. 640 이하에서 토큰 값만 올린다 —
+   토큰을 쓰는 곳이 전부 따라간다. 간격 토큰은 숫자 이름(space-12 = 12)이라 여기서 바꾸지 않는다(화면별 작업).
+
+   글자: 캡션 11→12 · 작은 본문 12→13 · 기본 본문 13→15 · 강조 본문 14→16 · 섹션 제목 16→17 · 제목 18→20 · 20→22.
+         강조 본문(md)은 입력칸이 쓰는 크기다 — iOS 사파리는 16 미만 입력칸을 누르면 화면을 확대한다.
+   높이: 손가락 기준 44 가 기본. xs 28→36 · sm 32→40 · 기본 36→44 · lg 44→52 */
+@media (max-width: 640px) {
+  :root,
+  [data-theme="light"] {
+    --hps-text-xs: 12px;
+    --hps-text-sm: 13px;
+    --hps-text-base: 15px;
+    --hps-text-md: 16px;
+    --hps-text-lg: 17px;
+    --hps-text-xl: 20px;
+    --hps-text-2xl: 22px;
+
+    --control-height-xs: 36px;
+    --control-height-sm: 40px;
+    --control-height: 44px;
+    --control-height-lg: 52px;
+  }
+}

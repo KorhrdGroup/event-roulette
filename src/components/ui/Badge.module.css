@@ -1,0 +1,153 @@
+/* 뱃지 — 상태·분류·라벨 한 규격 (2026-09 신설).
+ * 크기: sm 18px/xs 글자 · md 22px/sm 글자. 굵기 600 하나.
+ * 모양: pill(기본) · square(radius sm, 분류 태그).
+ * 색: 상태색 토큰의 subtle 배경 + text 글자 — 흰 배경 위 4.5:1 을 지키는 짝. */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hps-space-4);
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+/* 아래 패딩으로 글자를 0.5px 올려 맞춘다.
+   잉크 기준으로는 위 패딩 0.5px 이 정확히 가운데였지만(8배 확대 픽셀 실측: 위 5.63 / 아래 5.63),
+   그 상태가 눈에는 낮게 읽혀 반 픽셀 올리기로 했다 — 계측이 아니라 보이는 대로 맞춘다 (2026-09) */
+.sm {
+  height: 18px;
+  padding: 0 var(--hps-space-6) 0.5px;
+  font-size: var(--hps-text-xs);
+}
+.md {
+  height: 22px;
+  padding: 0 var(--hps-space-8) 0.5px;
+  font-size: var(--hps-text-sm);
+}
+.pill {
+  border-radius: var(--hps-radius-full);
+}
+.square {
+  border-radius: var(--hps-radius-sm);
+}
+
+/* ── 톤 (soft: 옅은 배경 + 색 글자) ──
+   **여기 글자색은 옅은 배경 위에서 재야 한다.** 흰 바탕 기준 값(채움용 본색)을 그대로
+   가져오면 배경이 색을 먹어서 미달이 된다. success·teal·purple 이 -text 단계를 쓰는
+   이유가 이것이고, danger 도 2026-09-18 에 같은 자리로 맞췄다.
+   2026-09-22 에 info·neutral 을 풀었다 (미리보기로 세 안 비교, DESIGN_SYSTEM.md §6):
+   - info 3.94 → blue-hover 4.94. 접어 두었던 이유("soft hover 면 4.45")는 버튼 얘기였다 —
+     뱃지는 hover 가 없다.
+   - neutral 4.19 → 흰 바탕 + 테두리 + muted 4.62. 글자를 body 로 올리면 "조용해야 할 상태"가
+     반려·보류와 같은 무게가 된다 — 색을 빼고 테두리로 물러나게 해서 조용함과 대비를 같이 지켰다.
+     → **2026-09-23 다시 회색 바탕으로.** 상태 뱃지가 한 줄에 나란히 서면 회색 둘만 혼자 테두리라
+       오히려 튀었다. 바탕은 --hps-bg 로 돌리고 글자를 --color-neutral-text(4.57)로 한 칸만 내렸다 —
+       4.5 를 넘는 가장 옅은 회색이라 조용함은 거의 그대로다.
+   warning(3.18)은 그대로다. DESIGN_SYSTEM.md 가 "의도적으로 비켜간 값" 이라고 적어 둔 자리이고,
+   text-strong(6.38)으로 올리면 갈색 도는 앰버가 된다. */
+.neutral {
+  background: var(--hps-fill);
+  color: var(--color-neutral-text);
+}
+.info {
+  background: var(--hps-blue-subtle);
+  color: var(--hps-blue-hover);
+}
+.success {
+  background: var(--color-success-subtle);
+  color: var(--color-success-text);
+}
+.warning {
+  background: var(--color-warning-subtle);
+  color: var(--color-warning-text);
+}
+.danger {
+  background: var(--color-danger-subtle);
+  color: var(--color-danger-hover);   /* 연빨강 위 5.02 (본색은 3.96) */
+}
+.teal {
+  background: var(--color-teal-subtle);
+  color: var(--color-teal-text);
+}
+.purple {
+  background: var(--color-purple-subtle);
+  color: var(--color-purple-text);
+}
+
+/* ── solid: 색 채움 + 흰 글자 — 오늘·추천·순위처럼 한 화면에 몇 개 없는 강조 라벨 ── */
+.solid.neutral {
+  background: var(--hps-text-muted);
+  color: var(--hps-text-inverse);
+  box-shadow: none;   /* soft neutral 의 테두리를 끈다 */
+}
+.solid.info {
+  background: var(--hps-blue-fill);
+  color: var(--hps-text-on-accent);
+}
+.solid.success {
+  background: var(--color-success-fill);
+  color: var(--hps-text-on-accent);
+}
+.solid.warning {
+  background: var(--color-warning);
+  color: var(--color-warning-on);
+}
+.solid.danger {
+  background: var(--color-danger-fill);
+  color: var(--hps-text-on-accent);
+}
+.solid.teal {
+  background: var(--color-teal);
+  color: var(--hps-text-on-accent);
+}
+.solid.purple {
+  background: var(--color-purple);
+  color: var(--hps-text-on-accent);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+.icon svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ── 카운트 뱃지 — 탭·아이콘 옆 건수 ── */
+.count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0.5px var(--hps-space-6) 0; /* 숫자도 같은 보정 */
+  border-radius: var(--hps-radius-full);
+  font-size: var(--hps-text-xs);
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+.count_info {
+  background: var(--hps-blue-fill);
+  color: var(--hps-text-on-accent);
+}
+.count_danger {
+  background: var(--color-danger-fill);
+  color: var(--hps-text-on-accent);
+}
+.count_neutral {
+  background: var(--hps-fill);
+  color: var(--hps-text-muted);
+}

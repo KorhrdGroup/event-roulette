@@ -1,0 +1,89 @@
+/* 네이티브 <select> 껍데기 — 폼 안의 긴 목록용. OS 셀렉트 동작(키보드·모바일 휠)은 그대로 두고 모양만 토큰으로.
+ * <Select> 와 같은 트리거 규격(md 36 / sm 32, 1px 테두리, radius md, 오른쪽 chevron). 2026-09 신설. */
+
+.wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+}
+.fullWidth {
+  width: 100%;
+}
+.fullWidth .select {
+  width: 100%;
+}
+
+.select {
+  appearance: none;
+  /* 기본은 내용 폭 — 표 셀처럼 좁은 자리에서 글자가 사라지지 않게. 꽉 채우려면 fullWidth */
+  width: auto;
+  /* 껍데기(.wrap)가 부모 때문에 넓어지면(Field 안 · flex:1 을 준 className) 그만큼 따라 늘어난다.
+     예전엔 셀렉트는 글자 폭 그대로이고 화살표만 껍데기 오른쪽 끝에 붙어 떨어져 보였다 (2026-09-29) */
+  flex: 1 1 auto;
+  max-width: 100%;
+  height: var(--control-height, 36px);
+  padding: 0 var(--hps-space-32) 0 var(--hps-space-12);
+  border: 1px solid var(--hps-border);
+  border-radius: var(--hps-radius-md);
+  background: var(--hps-card-bg);
+  color: var(--hps-text-primary);
+  font-family: inherit;
+  font-size: var(--hps-text-base);
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.sm .select {
+  height: var(--control-height-sm, 32px);
+  /* 오른쪽 28 = chevron 자리(오른쪽 8 + 아이콘 12) + 글자와의 틈 8. md 의 32(10+12+10)와 같은 셈이다.
+     예전엔 var(--hps-space-28, 28px) 였는데 --hps-space-28 은 토큰에 없어서 늘 대체값으로 그려졌다.
+     한 곳뿐이라 토큰을 늘리지 않고 있는 눈금으로 적는다 (2026-09-22). */
+  padding: 0 calc(var(--hps-space-24) + var(--hps-space-4)) 0 var(--hps-space-10);
+  font-size: var(--hps-text-sm);
+}
+/* lg 44 — 큰 폼(계약서 · 퍼널 · 등록 창)에서 Input lg · DateInput lg 옆. Select lg 와 같은 규격 (2026-09-29) */
+.lg .select {
+  height: var(--control-height-lg, 44px);
+  /* 오른쪽 36 = chevron 자리(오른쪽 14 + 아이콘 12) + 글자와의 틈 10 */
+  padding: 0 calc(var(--hps-space-32) + var(--hps-space-4)) 0 var(--hps-space-14);
+  font-size: var(--hps-text-md);
+}
+.lg .chevron {
+  right: var(--hps-space-14);
+}
+.select:hover:not(:disabled) {
+  border-color: var(--hps-border-hover);
+}
+.select:focus-visible {
+  outline: none;
+  border-color: var(--hps-blue);
+  box-shadow: var(--hps-focus-ring);
+}
+/* 오류 — Input 의 .invalid 와 같은 약속 */
+.select.invalid,
+.select.invalid:hover:not(:disabled),
+.select.invalid:focus-visible {
+  border-color: var(--color-danger);
+}
+.select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+/* 값이 없을 때(placeholder option) 회색 */
+.select.empty {
+  color: var(--hps-text-tertiary);
+  font-weight: 400;
+}
+
+.chevron {
+  position: absolute;
+  right: var(--hps-space-10);
+  display: inline-flex;
+  color: var(--hps-text-tertiary);
+  pointer-events: none;
+}
+.sm .chevron {
+  right: var(--hps-space-8);
+}

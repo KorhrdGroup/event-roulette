@@ -1,0 +1,260 @@
+/* 팝업 공용 틀 (2026-10-01) — 값의 근거는 docs/DESIGN_SYSTEM.md §3.18
+   팝업 판 67개를 세어 다수를 따랐고, 반반으로 갈린 것(모서리 · 구분선 · 좌우 여백)은 사용자가 골랐다. */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--hps-z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--hps-space-20);
+  background: var(--hps-scrim);
+  animation: overlayIn 0.12s ease-out;
+}
+
+@keyframes overlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 판 — 등장 값은 확인창(ConfirmDialog)과 같다 */
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  background: var(--hps-card-bg);
+  border-radius: var(--hps-radius-lg);
+  box-shadow: var(--hps-shadow-modal);
+  outline: none;
+  animation: panelIn 0.15s ease-out;
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .panel {
+    animation: none;
+  }
+}
+
+/* 폭 네 단계 — 27가지로 흩어져 있던 값을 가까운 단계로 올림했다 */
+.sm {
+  max-width: 420px;
+}
+
+.md {
+  max-width: 520px;
+}
+
+.lg {
+  max-width: 720px;
+}
+
+.xl {
+  max-width: 880px;
+}
+
+/* width 로 받은 폭 — 큰 상세처럼 화면이 정하는 값 */
+.customWidth {
+  max-width: var(--modal-width);
+}
+
+/* ── 머리 ── */
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--hps-space-12);
+  flex-shrink: 0;
+  padding: var(--hps-space-16) var(--hps-space-20);
+  border-bottom: 1px solid var(--hps-border-subtle);
+}
+
+.headEnd {
+  display: flex;
+  align-items: center;
+  gap: var(--hps-space-8);
+  flex-shrink: 0;
+}
+
+.titleWrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hps-space-2);
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--hps-text-lg);
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--hps-text-primary);
+}
+
+.sub {
+  margin: 0;
+  font-size: var(--hps-text-sm);
+  color: var(--hps-text-secondary);
+}
+
+/* ── 몸 — 길면 여기만 스크롤, 머리 · 바닥은 붙어 있다 ── */
+.body {
+  flex: 1;
+  min-height: 0;
+}
+
+/* 여백 · 스크롤은 :where 로 둔다 — 화면이 bodyClassName 으로 준 값이 CSS 순서와 상관없이 이긴다
+   (표를 가장자리까지 붙일 때 padding: 0, 안에서 따로 스크롤할 때 overflow: hidden) */
+:where(.body) {
+  padding: var(--hps-space-20);
+  overflow-y: auto;
+}
+
+/* 몸 안의 목록이 판 밖으로 나가야 하는 짧은 팝업 — 자르지 않는 대신 몸이 스크롤되지 않는다 */
+.overflowVisible,
+.overflowVisible .body {
+  overflow: visible;
+}
+
+.fullHeight {
+  height: 90vh;
+}
+
+/* ── 바닥줄 ── */
+.foot {
+  display: flex;
+  align-items: center;
+  gap: var(--hps-space-8);
+  flex-shrink: 0;
+  padding: var(--hps-space-14) var(--hps-space-20);
+  border-top: 1px solid var(--hps-border-subtle);
+}
+
+.footEnd {
+  display: flex;
+  align-items: center;
+  gap: var(--hps-space-8);
+  margin-left: auto;
+}
+
+/* 좁은 화면 — 왼쪽 것(footerStart)과 취소 · 저장이 한 줄에 못 서면 줄을 바꾼다.
+   안 바꾸면 주 버튼이 판 밖으로 밀려 잘린다(등록학생 수정 팝업, 375px 에서 40px) */
+@media (max-width: 640px) {
+  .foot {
+    flex-wrap: wrap;
+    row-gap: var(--hps-space-8);
+  }
+}
+
+/* ── 판만(큰 상세) — 닫기는 오른쪽 위에 떠 있고 안쪽은 화면이 짠다 ── */
+.bareClose {
+  position: absolute;
+  top: var(--hps-space-16);
+  right: var(--hps-space-16);
+  z-index: 1;
+}
+
+.bareBody {
+  flex: 1;
+  min-height: 0;
+}
+
+/* 안쪽 여백은 없다 — 판만 쓰는 화면은 전부 자기 여백을 들고 있었다. 길면 판 안 전체가 스크롤된다 */
+:where(.bareBody) {
+  overflow-y: auto;
+}
+
+/* 안쪽이 머리 · 몸 · 발을 직접 들고 있는 판 — 세로로 쌓고, 스크롤은 안쪽의 몸이 맡는다 */
+.stack {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 큰 상세 — 판이 내용만큼 자라고 막 전체가 스크롤된다. 판이 자르지 않아 안의 작은 판이 밖으로 나갈 수 있다.
+   짧으면 가운데, 길면 위에서부터(margin: auto) */
+.overlayPage {
+  align-items: flex-start;
+  overflow-y: auto;
+}
+
+.panelPage {
+  max-height: none;
+  margin: auto;
+  overflow: visible;
+}
+
+.panelPage .bareBody,
+.panelPage .body {
+  overflow: visible;
+}
+
+/* 큰 상세 — 좁은 화면(480px 이하)에서는 화면을 꽉 채운다 */
+@media (max-width: 480px) {
+  .overlayMobileFull {
+    align-items: stretch;
+    padding: 0;
+  }
+
+  .panelMobileFull {
+    max-width: none;
+    min-height: 100vh;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  /* fullHeight 와 같이 쓰면 판이 막 높이(보이는 화면)에 맞춘다 — 100vh 는 휴대폰 주소창 · 툴바 뒤로 바닥줄을 밀어낸다 */
+  .panelMobileFull.fullHeight {
+    height: auto;
+    min-height: 0;
+  }
+}
+
+/* 아래에서 올라오는 판(sheet) — 좁은 화면의 화면 고르기 · 필터.
+   화면 아래에 붙고 폭을 다 쓴다. 위쪽 모서리만 둥글고, 홈 막대가 있는 기기는 그만큼 아래를 띄운다 */
+.overlaySheet {
+  align-items: flex-end;
+  padding: 0;
+}
+
+.panelSheet {
+  max-width: none;
+  max-height: 80vh;
+  padding-bottom: env(safe-area-inset-bottom);
+  border-radius: var(--hps-radius-xl) var(--hps-radius-xl) 0 0;
+  animation: sheetIn 0.2s ease-out;
+}
+
+@keyframes sheetIn {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panelSheet {
+    animation: none;
+  }
+}

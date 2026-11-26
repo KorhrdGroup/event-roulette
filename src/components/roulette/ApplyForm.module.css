@@ -1,0 +1,162 @@
+/* 무료 상담 신청서 — 오피스 입력 폼 규칙(칸 20 간격 · 카드 모서리 --hps-radius-card · 안쪽 20) */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hps-space-24);
+  padding: var(--hps-space-24) var(--hps-space-20);
+  border-radius: var(--hps-radius-card);
+  background: var(--hps-card-bg);
+  border: 1px solid var(--hps-border);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--hps-space-8);
+  text-align: center;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--hps-radius-lg);
+  background: var(--hps-blue-subtle);
+  color: var(--hps-blue);
+}
+
+.title {
+  color: var(--hps-text-primary);
+  font-size: var(--hps-text-3xl);
+  font-weight: 700;
+}
+
+.sub {
+  color: var(--hps-text-muted);
+  font-size: var(--hps-text-md);
+  line-height: var(--leading-normal);
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hps-space-20);
+}
+
+.gift {
+  color: var(--hps-blue);
+}
+
+.prizeInput {
+  color: var(--hps-blue);
+  font-weight: 700;
+}
+
+.agree {
+  border: 1px solid var(--hps-border);
+  border-radius: var(--hps-radius-md);
+}
+
+.agreeAll {
+  padding: var(--hps-space-12) var(--hps-space-14);
+  border-bottom: 1px solid var(--hps-border);
+  font-weight: 600;
+}
+
+.agreeRow {
+  padding: var(--hps-space-4) var(--hps-space-14);
+}
+
+.agreeRow + .agreeRow {
+  border-top: 1px solid var(--hps-border);
+}
+
+.agreeLine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+}
+
+.req {
+  color: var(--hps-blue);
+  font-weight: 600;
+}
+
+.chevOpen {
+  transform: rotate(180deg);
+}
+
+.termsBody {
+  margin-bottom: var(--hps-space-12);
+  padding: var(--hps-space-12);
+  border-radius: var(--hps-radius-md);
+  background: var(--hps-bg-subtle);
+  color: var(--hps-text-body);
+  font-size: var(--hps-text-sm);
+  line-height: var(--leading-normal);
+}
+
+.terms {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--hps-space-4) var(--hps-space-10);
+  margin: 0;
+}
+
+.terms dt {
+  color: var(--hps-text-primary);
+  font-weight: 600;
+}
+
+.terms dd {
+  margin: 0;
+}
+
+.terms + .termsNote {
+  margin-top: var(--hps-space-8);
+}
+
+.submitError {
+  color: var(--color-danger);
+  font-size: var(--hps-text-md);
+  text-align: center;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hps-space-8);
+}
+
+/* 빠른 상담 — 체크 한 줄 + 아래 안내 */
+.fastRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hps-space-4);
+  font-weight: 600;
+}
+
+.fastHint {
+  padding-left: var(--hps-space-24);
+  color: var(--hps-text-muted);
+  font-size: var(--hps-text-sm);
+  font-weight: 400;
+}
+
+.count {
+  color: var(--hps-text-muted);
+  font-size: var(--hps-text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 상담 선호 시간 세 칸 — 오피스 ChoiceGroup 은 3열을 700px 아래에서 한 줄에 하나로 쌓는데,
+   시간대 글자는 짧아 360 폰에서도 셋이 한 줄에 들어간다. 한 묶음으로 읽히게 셋을 나란히 둔다 */
+.fields .threeAcross.threeAcross.threeAcross {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--hps-space-8);
+}
