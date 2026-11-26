@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ClipboardList, Gift, ShieldCheck } from "lucide-react";
+import { ChevronDown, Gift, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Checkbox } from "@/components/ui/Checkbox";
@@ -112,9 +112,6 @@ export default function ApplyForm({
   return (
     <section className={styles.card} aria-labelledby="apply-title">
       <div className={styles.head}>
-        <span className={styles.icon} aria-hidden="true">
-          <ClipboardList size={24} />
-        </span>
         <h1 id="apply-title" className={styles.title}>
           무료 상담 신청서
         </h1>
