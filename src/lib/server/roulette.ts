@@ -20,7 +20,7 @@ export const OTP_PER_IP_HOUR = 20;
 export const SPIN_TICKET_MIN = 30;
 export const APPLY_TICKET_MIN = 60;
 /** 인증번호 문자 머리 */
-export const SMS_BRAND = "[한평생교육]";
+export const SMS_BRAND = "[한평생원격교육원]";
 
 export interface RouletteEventRow {
   id: number;
