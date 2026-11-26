@@ -1,7 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CheckCircle2, ClipboardList, Gift, PartyPopper, RotateCw } from "lucide-react";
+import { ClipboardList, Gift, PartyPopper, RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
@@ -76,7 +77,6 @@ export default function RouletteLanding({ slug }: { slug: string }) {
   const [rotation, setRotation] = useState(0);
   const [spinning, setSpinning] = useState(false);
   const [spinError, setSpinError] = useState("");
-  const [doneName, setDoneName] = useState("");
   const wheelRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
   /**
@@ -98,7 +98,6 @@ export default function RouletteLanding({ slug }: { slug: string }) {
     setOverlay(null);
     setResult(null);
     setAuth(null);
-    setDoneName("");
     setSpinError("");
     setView("landing");
     topRef.current?.scrollIntoView();
@@ -383,29 +382,25 @@ export default function RouletteLanding({ slug }: { slug: string }) {
               setSpinError("인증 시간이 지났어요. 휴대폰 번호를 다시 확인해 주세요.");
               setOverlay("verify");
             }}
-            onDone={(name) => {
+            onDone={() => {
               const r = { ...result, applied: true };
               setResult(r);
               remember(auth, r);
-              setDoneName(name);
               setView("done");
               topRef.current?.scrollIntoView();
             }}
           />
         )}
 
+        {/* 완료 — 바로소셜 상담 신청서(app/form) 완료 화면과 같은 모양: 카드 없이 가운데 3D 체크 이미지 + 두 줄 (2026-11-26 사용자) */}
         {view === "done" && result && (
           <section className={styles.done}>
-            <CheckCircle2 size={56} className={styles.doneIcon} aria-hidden="true" />
-            <h1 className={styles.doneTitle}>상담 신청이 완료되었어요</h1>
-            <p className={styles.doneText}>
-              {doneName ? `${doneName}님, ` : ""}담당 선생님이 빠르게 연락드릴게요. 당첨 혜택은 상담 때 자세히 안내해 드립니다.
-            </p>
-            <div className={styles.donePrize}>
-              <span>당첨 혜택</span>
-              <b>{result.label}</b>
-            </div>
-            <p className={styles.fine}>교육 혜택은 해당 과정 등록 시 적용됩니다.</p>
+            <Image src="/complete-check.png" alt="" width={300} height={300} priority className={styles.doneImage} />
+            <h1 className={styles.doneTitle}>
+              신청이 완료되었습니다.
+              <br />
+              곧 연락드리겠습니다.
+            </h1>
             {demo && (
               <Button variant="secondary" fullWidth className={styles.demoAgain} onClick={resetDemo}>
                 미리보기 처음부터 다시 해 보기

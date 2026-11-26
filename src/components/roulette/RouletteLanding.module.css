@@ -206,56 +206,30 @@
   line-height: var(--leading-normal);
 }
 
-/* ── 완료 ── */
+/* ── 완료 — 바로소셜 완료 화면(stepflow.module.css .title · 이미지 300)과 같은 모양 ── */
 .done {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   padding: var(--hps-space-40) var(--hps-space-20);
-  border-radius: var(--hps-radius-card);
-  background: var(--hps-card-bg);
   text-align: center;
-  border: 1px solid var(--hps-border);
 }
 
-.doneIcon {
-  color: var(--color-success);
+.doneImage {
+  width: 300px;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto var(--hps-space-24);
 }
 
+/* 28px / 700 / 1.4 — 바로소셜 .title 값. 랜딩 글자 단계(4xl 32)보다 한 칸 작다 */
 .doneTitle {
-  margin: var(--hps-space-16) 0 var(--hps-space-8);
-  font-size: var(--hps-text-3xl);
+  margin-bottom: var(--hps-space-48);
+  color: var(--hps-text-primary);
+  font-size: calc(var(--hps-text-3xl) + var(--hps-space-4));
   font-weight: 700;
-}
-
-.doneText {
-  margin-bottom: var(--hps-space-24);
-  color: var(--hps-text-muted);
-  font-size: var(--hps-text-md);
-  line-height: var(--leading-normal);
-}
-
-.donePrize {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--hps-space-4);
-  width: 100%;
-  padding: var(--hps-space-16);
-  border-radius: var(--hps-radius-lg);
-  background: var(--hps-blue-subtle);
-}
-
-.donePrize span {
-  color: var(--hps-text-body);
-  font-size: var(--hps-text-sm);
-  font-weight: 600;
-}
-
-.donePrize b {
-  color: var(--hps-blue);
-  font-size: var(--hps-text-xl);
-  font-weight: 700;
+  line-height: 1.4;
 }
 
 /* ── 당첨 팝업 몸 ── */
