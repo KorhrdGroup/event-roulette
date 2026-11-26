@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/server/supabase'
 import { sendReceiptAlimtalk } from '@/lib/server/kakao'
 import {
-  DEFAULT_INTEREST_COURSE,
+  INTEREST_COURSE,
   EDUCATION_OPTIONS,
   PREFERRED_TIME_OPTIONS,
   REASON_OPTIONS,
@@ -10,16 +10,15 @@ import {
   ROULETTE_SOURCE_MAJOR,
   TIME_MEMO_MAX,
   formatMobile,
-  isInterestCourse,
 } from '@/lib/roulette'
 import { APPLY_TICKET_MIN, getAdminUids, getRouletteEvent, phoneByTicket } from '@/lib/server/roulette'
 
 export const runtime = 'nodejs'
 
-// POST /api/roulette/[slug]/apply { ticket, name, course, education, reasons, fastConsultation, preferredTimes, timeMemo, privacyAgreed, contactAgreed }
+// POST /api/roulette/[slug]/apply { ticket, name, education, reasons, fastConsultation, preferredTimes, timeMemo, privacyAgreed, contactAgreed }
 //   상담 신청서 → 학점은행제 문의DB(hakjeom_consultations) 한 줄
 //     이름 · 연락처(인증한 번호 — 화면에서 고칠 수 없다) · 유입경로 「당근_{세부 유입경로}」 · 당첨 혜택(event_prize, 룰렛 결과 — 화면에서 고칠 수 없다)
-//     · 관심 과정(hope_course, 기본 사회복지사) · 최종학력(education) · 취득사유(reason, 「, 」로 잇는다 — 바로소셜과 같다)
+//     · 관심 과정(hope_course, 사회복지사 고정) · 최종학력(education) · 취득사유(reason, 「, 」로 잇는다 — 바로소셜과 같다)
 //     · 빠른 상담(fast_consultation) · 상담 선호 시간(preferred_times) · 시간 메모(consult_time_memo) · 문의 접수 일시(created_at, 지금)
 //   한 참여에 한 번만 — 먼저 참여 줄에 applied_at 을 걸고(동시에 두 번 눌러도 하나만 지나간다), 문의 줄을 넣는다
 //   개인정보처리방침 동의는 바로소셜과 같은 방침(그 안에 홍보 · 광고성 정보 제공 목적이 있다)이라, 바로소셜처럼
@@ -30,7 +29,6 @@ async function handlePOST(req: NextRequest, { params }: { params: Promise<{ slug
   const body = (await req.json().catch(() => null)) as {
     ticket?: unknown
     name?: unknown
-    course?: unknown
     education?: unknown
     reasons?: unknown
     fastConsultation?: unknown
@@ -42,7 +40,7 @@ async function handlePOST(req: NextRequest, { params }: { params: Promise<{ slug
   const name = String(body?.name ?? '').replace(/\s+/g, ' ').trim()
   if (!name || name.length > ROULETTE_LIMITS.name)
     return NextResponse.json({ error: '이름을 입력해 주세요.', field: 'name' }, { status: 400 })
-  const hopeCourse = isInterestCourse(body?.course) ? body.course : DEFAULT_INTEREST_COURSE
+  const hopeCourse = INTEREST_COURSE.value
   const education = (EDUCATION_OPTIONS as readonly string[]).includes(String(body?.education)) ? String(body?.education) : null
   if (!education) return NextResponse.json({ error: '최종학력을 골라 주세요.', field: 'education' }, { status: 400 })
   const pickedReasons = Array.isArray(body?.reasons) ? (body?.reasons as unknown[]) : []

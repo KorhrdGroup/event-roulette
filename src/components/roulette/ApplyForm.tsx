@@ -6,12 +6,10 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Field, Input } from "@/components/ui/Input";
-import { NativeSelect } from "@/components/ui/NativeSelect";
 import { ChoiceChip, ChoiceGroup } from "@/components/ui/ChoiceChip";
 import {
-  DEFAULT_INTEREST_COURSE,
   EDUCATION_OPTIONS,
-  INTEREST_COURSES,
+  INTEREST_COURSE,
   PREFERRED_TIME_OPTIONS,
   REASON_OPTIONS,
   ROULETTE_LIMITS,
@@ -22,7 +20,7 @@ import PrivacyPolicyModal from "./PrivacyPolicyModal";
 import styles from "./ApplyForm.module.css";
 
 /**
- * 무료 상담 신청서 — 이름 · 연락처(인증한 번호, 고칠 수 없음) · 관심 과정(기본 사회복지사 2급) · 최종학력 · 취득사유
+ * 무료 상담 신청서 — 이름 · 연락처(인증한 번호, 고칠 수 없음) · 관심 과정(사회복지사 2급 고정) · 최종학력 · 취득사유
  *   · 빠른 상담 · 상담 선호 시간 · 시간 메모(바로소셜 신청서와 같은 칸, 2026-11-26) · 당첨 혜택(룰렛 결과, 고칠 수 없음) · 동의 두 가지
  *   (개인정보처리방침 동의 — 바로소셜과 같은 방침 팝업, 상담 연락 동의).
  * 「상담 신청 완료」를 누르면 오피스 학점은행제 문의DB 로 들어간다(apply API).
@@ -47,7 +45,6 @@ export default function ApplyForm({
   onExpired: () => void;
 }) {
   const [name, setName] = useState("");
-  const [course, setCourse] = useState<string>(DEFAULT_INTEREST_COURSE);
   const [education, setEducation] = useState<string | null>(null);
   const [reasons, setReasons] = useState<string[]>([]);
   const [fast, setFast] = useState(false);
@@ -89,7 +86,6 @@ export default function ApplyForm({
         body: JSON.stringify({
           ticket,
           name: name.trim(),
-          course,
           education,
           reasons,
           fastConsultation: fast,
@@ -156,13 +152,7 @@ export default function ApplyForm({
         </Field>
 
         <Field label="관심 과정" required>
-          <NativeSelect size="lg" fullWidth value={course} onChange={(e) => setCourse(e.target.value)}>
-            {INTEREST_COURSES.map((c) => (
-              <option key={c.value} value={c.value}>
-                {c.label}
-              </option>
-            ))}
-          </NativeSelect>
+          <Input size="lg" fullWidth readOnly value={INTEREST_COURSE.label} />
         </Field>
 
         <Field label="최종학력" required group hint="최종학력마다 과정이 달라져요!" error={errors.education} errorPlacement="label">

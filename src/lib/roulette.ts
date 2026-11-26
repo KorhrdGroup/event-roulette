@@ -88,22 +88,10 @@ export function roulettePeriodLabel(startsAt: string | null, endsAt: string | nu
 }
 
 /**
- * 관심 과정 — 상담 신청서의 고르는 칸(기본 사회복지사 2급, 2026-11-26 사용자).
- * value 는 오피스 문의DB 희망과정(hope_course) 값 — 오피스 거르기 목록(HOPE_COURSE_FILTER_OPTIONS) · 바로소셜과 같은 글자로 넣는다
+ * 관심 과정 — 사회복지사 2급으로 고정(2026-11-26 사용자 「관심과정 사회복지사 2급으로 고정」). 신청서는 고칠 수 없는 칸으로 보여 준다.
+ * value 는 오피스 문의DB 희망과정(hope_course) 값 — 오피스 거르기 목록(HOPE_COURSE_FILTER_OPTIONS) · 바로소셜과 같은 글자
  */
-export const INTEREST_COURSES = [
-  { label: "사회복지사 2급", value: "사회복지사" },
-  { label: "건강가정사", value: "건강가정사" },
-  { label: "보육교사", value: "보육교사" },
-  { label: "평생교육사", value: "평생교육사" },
-  { label: "아동학사 · 장애영유아", value: "아동학사/장애영유아" },
-  { label: "청소년지도사", value: "청소년지도사" },
-  { label: "심리상담사", value: "심리상담사" },
-] as const;
-export const DEFAULT_INTEREST_COURSE = INTEREST_COURSES[0].value;
-export function isInterestCourse(v: unknown): v is (typeof INTEREST_COURSES)[number]["value"] {
-  return INTEREST_COURSES.some((c) => c.value === v);
-}
+export const INTEREST_COURSE = { label: "사회복지사 2급", value: "사회복지사" } as const;
 
 /** 상담 신청서 고르는 칸 — 바로소셜 상담 신청서(app/form)와 같은 글자. 오피스 문의DB 에 그대로 들어간다 (2026-11-26 사용자) */
 export const EDUCATION_OPTIONS = ["고졸", "전문대졸", "대학교 중퇴", "4년제 대졸", "대학원생 이상"] as const;
