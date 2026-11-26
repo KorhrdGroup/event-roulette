@@ -85,8 +85,20 @@ export default function RouletteLanding({ slug }: { slug: string }) {
    * 아무것도 저장하지 않아 몇 번이든 처음부터 다시 할 수 있다. 배포본(production)에서는 켜지지 않는다
    */
   const [demo, setDemo] = useState(false);
+  /**
+   * 룰렛만 돌려 보기(?spin=1) — 개발 서버에서만. 인증 · 신청 없이 오피스에 설정한 실제 확률로 뽑아(preview-spin, 저장 없음)
+   * 판을 돌리고, 몇 번 돌렸는지 · 칸마다 몇 번 나왔는지 보여 준다(확률 눈으로 보기, 2026-11-26 사용자)
+   */
+  const [spinOnly, setSpinOnly] = useState(false);
+  const [tally, setTally] = useState<Record<number, number>>({});
   useEffect(() => {
-    if (process.env.NODE_ENV !== "production" && new URLSearchParams(window.location.search).has("demo")) setDemo(true);
+    if (process.env.NODE_ENV === "production") return;
+    const q = new URLSearchParams(window.location.search);
+    if (q.has("demo")) setDemo(true);
+    if (q.has("spin")) {
+      setDemo(true);
+      setSpinOnly(true);
+    }
   }, []);
   // 미리보기는 이 기기에 남은 실제 결과와 섞이지 않게 빈 상태에서 시작한다
   useEffect(() => {
@@ -197,7 +209,31 @@ export default function RouletteLanding({ slug }: { slug: string }) {
     [api, aimAt, remember, demo, event],
   );
 
+  const spinPreview = async () => {
+    setSpinError("");
+    setOverlay(null);
+    wheelRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    try {
+      const res = await fetch(`${api}/preview-spin`, { method: "POST" });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error ?? "뽑지 못했습니다.");
+      const id = Number(body.prizeId);
+      setResult({ prizeId: id, label: String(body.label), already: false, applied: false });
+      setTally((t) => ({ ...t, [id]: (t[id] ?? 0) + 1 }));
+      setTimeout(() => {
+        setSpinning(true);
+        aimAt(id);
+      }, 350);
+    } catch (e) {
+      setSpinError(e instanceof Error ? e.message : "뽑지 못했습니다.");
+    }
+  };
+
   const onCta = () => {
+    if (spinOnly) {
+      void spinPreview();
+      return;
+    }
     if (result) {
       if (result.applied) setView("done");
       else setOverlay("result");
@@ -233,7 +269,9 @@ export default function RouletteLanding({ slug }: { slug: string }) {
   const closed = !!event && status !== "open" && !result;
   const ctaLabel = spinning
     ? "룰렛이 돌아가는 중…"
-    : result
+    : spinOnly
+      ? "룰렛 돌리기 (확률 그대로)"
+      : result
       ? result.applied
         ? "상담 신청 내역 보기"
         : "내 당첨 결과 다시 보기"
@@ -281,7 +319,7 @@ export default function RouletteLanding({ slug }: { slug: string }) {
                   fullWidth
                   onClick={onCta}
                   disabled={!event || spinning || closed}
-                  leftIcon={(demo || !result) && !spinning && !closed ? <RotateCw size={20} /> : undefined}
+                  leftIcon={(spinOnly || !result) && !spinning && !closed ? <RotateCw size={20} /> : undefined}
                 >
                   {ctaLabel}
                 </Button>
@@ -290,7 +328,27 @@ export default function RouletteLanding({ slug }: { slug: string }) {
                     {spinError || loadError}
                   </p>
                 )}
-                {demo && (
+                {spinOnly && event && (
+                  <div className={styles.tally}>
+                    <div className={styles.tallyHead}>
+                      <Badge tone="warning" size="sm">
+                        룰렛만 돌려 보기 — 저장 없음
+                      </Badge>
+                      <span>
+                        {Object.values(tally).reduce((a, b) => a + b, 0)}번 돌림
+                      </span>
+                    </div>
+                    <ul className={styles.tallyList}>
+                      {event.prizes.map((p) => (
+                        <li key={p.id}>
+                          <span>{p.label}</span>
+                          <b>{tally[p.id] ?? 0}</b>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {demo && !spinOnly && (
                   <div className={styles.demoBar}>
                     <Badge tone="warning" size="sm">
                       미리보기 — 문자 · 접수 없음
@@ -438,7 +496,16 @@ export default function RouletteLanding({ slug }: { slug: string }) {
           size="sm"
           title="룰렛 결과"
           footer={
-            result.applied ? (
+            spinOnly ? (
+              <>
+                <Button variant="neutral" onClick={() => setOverlay(null)}>
+                  닫기
+                </Button>
+                <Button variant="primary" onClick={() => void spinPreview()}>
+                  한 번 더 돌리기
+                </Button>
+              </>
+            ) : result.applied ? (
               <Button variant="primary" onClick={() => setOverlay(null)}>
                 확인
               </Button>

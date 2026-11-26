@@ -307,3 +307,42 @@
 .demoAgain {
   margin-top: var(--hps-space-20);
 }
+
+/* ── 룰렛만 돌려 보기(?spin=1, 개발 서버 전용) — 칸마다 나온 횟수 ── */
+.tally {
+  margin-top: var(--hps-space-16);
+  padding: var(--hps-space-12) var(--hps-space-14);
+  border: 1px solid var(--hps-border);
+  border-radius: var(--hps-radius-md);
+  text-align: left;
+}
+
+.tallyHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--hps-space-8);
+  color: var(--hps-text-body);
+  font-size: var(--hps-text-sm);
+  font-weight: 600;
+}
+
+.tallyList {
+  display: grid;
+  gap: var(--hps-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--hps-text-body);
+  font-size: var(--hps-text-sm);
+}
+
+.tallyList li {
+  display: flex;
+  justify-content: space-between;
+}
+
+.tallyList b {
+  color: var(--hps-blue);
+  font-variant-numeric: tabular-nums;
+}
